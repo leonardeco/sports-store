@@ -1,0 +1,39 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Scripts de descarga (archivos de utilidad, no parte del proyecto)
+descarga-amazon.mjs
+descarga-final.mjs
+descarga-imagenes.mjs
+descarga-proxy.mjs
+descargar-imagenes.mjs
+descargar-logos.mjs
+fetch-nutra.mjs
+generar-placeholders.mjs
+generar-svg-local.mjs
+mejorar-imagenes.mjs
+
+# Test files
+test.webp
