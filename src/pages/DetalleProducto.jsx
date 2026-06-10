@@ -90,10 +90,14 @@ export default function DetalleProducto() {
     
       {/* Lightbox */}
       {isLightboxOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center cursor-pointer opacity-0 animate-fade-in"
           style={{ animationFillMode: "forwards" }}
           onClick={() => setIsLightboxOpen(false)}
+          onKeyDown={e => e.key === "Escape" && setIsLightboxOpen(false)}
+          role="button"
+          tabIndex={0}
+          aria-label="Cerrar imagen ampliada"
         >
           <button className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-10 h-10"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
@@ -125,9 +129,13 @@ export default function DetalleProducto() {
             REEMPLAZAR: cambia producto.imagen por tu foto real.
             Ejemplo: src="/imagenes/whey-protein-gold.jpg"
         */}
-        <div 
+        <div
           className="relative rounded-2xl overflow-hidden aspect-square bg-brand-dark-card cursor-zoom-in group"
           onClick={() => setIsLightboxOpen(true)}
+          onKeyDown={e => e.key === "Enter" && setIsLightboxOpen(true)}
+          role="button"
+          tabIndex={0}
+          aria-label="Ampliar imagen del producto"
         >
           {producto.badge && (
             <span

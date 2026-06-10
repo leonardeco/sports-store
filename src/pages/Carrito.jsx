@@ -1,39 +1,13 @@
 import { Link } from "react-router-dom"
 import { useCart } from "../context/CartContext"
 import { useState } from "react"
-import { CONFIG } from "../config"
 import productos from "../data/productos.json"
 import { formatoCOP } from "../utils/moneda"
 import useSEO from "../hooks/useSEO"
+import { generarLinkWhatsApp } from "../utils/whatsapp"
 
 // Destacados para upselling
 const destacados = productos.filter(p => p.destacado).slice(0, 4)
-
-// ── Genera el link de WhatsApp con el resumen del pedido ──────────────────────
-function generarLinkWhatsApp(items, total, nombre, pago, envio, orderId) {
-  const lineas = items.map(
-    item =>
-      `- ${item.cantidad}x ${item.nombre} ${item.variante && item.variante !== 'Única' ? `[${item.variante}]` : ''} - ${formatoCOP(item.precio * item.cantidad)}`
-  )
-
-  const fecha = new Date().toLocaleDateString("es-CO")
-  
-  const mensaje = [
-    `*NUEVA ORDEN: LEOFIT #ORD-${orderId}*`,
-    `- Fecha: ${fecha}`,
-    nombre ? `- Cliente: *${nombre}*` : `- Cliente: (Sin especificar)`,
-    "------------------------",
-    "*PRODUCTOS:*",
-    ...lineas,
-    "",
-    `- Envío: ${envio || 'A coordinar'}`,
-    `- Pago: ${pago || 'A coordinar'}`,
-    "------------------------",
-    `*TOTAL ESTIMADO: ${formatoCOP(total)}*`,
-  ].join("\n")
-
-  return `https://wa.me/${CONFIG.whatsapp.number}?text=${encodeURIComponent(mensaje)}`
-}
 
 // ── Componente fila de item ───────────────────────────────────────────────────
 function CartItem({ item }) {
@@ -150,8 +124,19 @@ export default function Carrito() {
            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
              {destacados.map(p => (
                <Link key={p.id} to={`/producto/${p.id}`} className="card group flex flex-col overflow-hidden">
-                 <div className="aspect-square relative overflow-hidden"><img src={p.imagen} className="object-cover w-full h-full group-hover:scale-105 transition-transform"/></div>
-                 <div className="p-3"><h4 className="text-sm font-semibold text-white line-clamp-1">{p.nombre}</h4><p className="text-brand-orange font-bold text-sm mt-1">{formatoCOP(p.precio)}</p></div>
+                 <div className="aspect-square relative overflow-hidden">
+                   <img
+                     src={p.imagen}
+                     alt={p.nombre}
+                     width={260}
+                     height={260}
+                     className="object-cover w-full h-full group-hover:scale-105 transition-transform"
+                   />
+                 </div>
+                 <div className="p-3">
+                   <h4 className="text-sm font-semibold text-white line-clamp-1">{p.nombre}</h4>
+                   <p className="text-brand-orange font-bold text-sm mt-1">{formatoCOP(p.precio)}</p>
+                 </div>
                </Link>
              ))}
            </div>
@@ -159,8 +144,6 @@ export default function Carrito() {
       </div>
     )
   }
-
-  const whatsappLink = generarLinkWhatsApp(items, totalPrice, nombreCliente, metodoPago, metodoEnvio, orderId)
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
@@ -229,18 +212,20 @@ export default function Carrito() {
             </div>
 
             <div className="mb-4 text-sm mt-4">
-               <label className="text-brand-muted block mb-1 font-semibold">Tu Nombre</label>
-               <input 
-                 type="text" 
-                 value={nombreCliente} 
-                 onChange={e => setNombreCliente(e.target.value)} 
-                 placeholder="Ej. Leonardo" 
+               <label htmlFor="carrito-nombre" className="text-brand-muted block mb-1 font-semibold">Tu Nombre</label>
+               <input
+                 id="carrito-nombre"
+                 type="text"
+                 value={nombreCliente}
+                 onChange={e => setNombreCliente(e.target.value)}
+                 placeholder="Ej. Leonardo"
                  className="w-full bg-brand-dark-3 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-brand-orange/50 transition-colors mb-4"
                />
-               
-               <label className="text-brand-muted block mb-1 font-semibold">Método de Envío</label>
-               <select 
-                 value={metodoEnvio} 
+
+               <label htmlFor="carrito-envio" className="text-brand-muted block mb-1 font-semibold">Método de Envío</label>
+               <select
+                 id="carrito-envio"
+                 value={metodoEnvio}
                  onChange={e => setMetodoEnvio(e.target.value)}
                  className="w-full bg-brand-dark-3 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-brand-orange/50 transition-colors mb-4 appearance-none"
                >
@@ -249,9 +234,10 @@ export default function Carrito() {
                  <option value="Envío a Domicilio">Envío a Domicilio</option>
                </select>
 
-               <label className="text-brand-muted block mb-1 font-semibold">Forma de Pago</label>
-               <select 
-                 value={metodoPago} 
+               <label htmlFor="carrito-pago" className="text-brand-muted block mb-1 font-semibold">Forma de Pago</label>
+               <select
+                 id="carrito-pago"
+                 value={metodoPago}
                  onChange={e => setMetodoPago(e.target.value)}
                  className="w-full bg-brand-dark-3 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-brand-orange/50 transition-colors mb-2 appearance-none"
                >
@@ -267,7 +253,7 @@ export default function Carrito() {
                 El número se configura en src/config.js
             */}
             <a
-              href={whatsappLink}
+              href={generarLinkWhatsApp(items, totalPrice, nombreCliente, metodoPago, metodoEnvio, orderId)}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full flex items-center justify-center gap-3 bg-green-600 hover:bg-green-500 text-white font-bold py-4 px-6 mt-2 rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-lg shadow-green-600/20"

@@ -113,10 +113,11 @@ export default function Contacto() {
 
             {/* Nombre */}
             <div>
-              <label className="block text-white text-sm font-medium mb-1.5">
+              <label htmlFor="contacto-nombre" className="block text-white text-sm font-medium mb-1.5">
                 Nombre completo *
               </label>
               <input
+                id="contacto-nombre"
                 type="text"
                 name="nombre"
                 value={form.nombre}
@@ -131,10 +132,11 @@ export default function Contacto() {
 
             {/* Email */}
             <div>
-              <label className="block text-white text-sm font-medium mb-1.5">
+              <label htmlFor="contacto-email" className="block text-white text-sm font-medium mb-1.5">
                 Email *
               </label>
               <input
+                id="contacto-email"
                 type="email"
                 name="email"
                 value={form.email}
@@ -149,10 +151,11 @@ export default function Contacto() {
 
             {/* Mensaje */}
             <div>
-              <label className="block text-white text-sm font-medium mb-1.5">
+              <label htmlFor="contacto-mensaje" className="block text-white text-sm font-medium mb-1.5">
                 Mensaje *
               </label>
               <textarea
+                id="contacto-mensaje"
                 name="mensaje"
                 value={form.mensaje}
                 onChange={handleChange}

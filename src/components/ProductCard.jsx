@@ -6,7 +6,6 @@ import { formatoCOP } from "../utils/moneda"
 
 const badgeColors = {
   "Más vendido": "bg-brand-orange text-white",
-  "Mas vendido": "bg-brand-orange text-white",
   "Nuevo":       "bg-brand-neon text-brand-dark",
   "Oferta":      "bg-red-500 text-white",
   "Destacado":   "bg-purple-500 text-white",

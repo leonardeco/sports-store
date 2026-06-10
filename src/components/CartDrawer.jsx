@@ -10,9 +10,10 @@ export default function CartDrawer() {
   return (
     <>
       {/* Overlay Oscuro */}
-      <div 
+      <div
         className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] transition-opacity"
         onClick={closeCart}
+        aria-hidden="true"
       />
       
       {/* Panel del Drawer */}
