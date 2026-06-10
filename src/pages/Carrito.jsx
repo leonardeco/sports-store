@@ -1,33 +1,13 @@
 import { Link } from "react-router-dom"
 import { useCart } from "../context/CartContext"
 import { useState } from "react"
-import { CONFIG } from "../config"
 import productos from "../data/productos.json"
+import { formatoCOP } from "../utils/moneda"
+import useSEO from "../hooks/useSEO"
+import { generarLinkWhatsApp } from "../utils/whatsapp"
 
 // Destacados para upselling
 const destacados = productos.filter(p => p.destacado).slice(0, 4)
-
-// ── Genera el link de WhatsApp con el resumen del pedido ──────────────────────
-function generarLinkWhatsApp(items, total, nombre) {
-  const lineas = items.map(
-    item =>
-      `• ${item.nombre} x${item.cantidad} = ${CONFIG.store.currencySymbol}${(item.precio * item.cantidad).toLocaleString("es-AR")}`
-  )
-
-  const mensaje = [
-    "*REF: LEOFIT*",
-    "────────────────",
-    nombre ? `¡Hola! Soy *${nombre}*. Me gustaría hacer el siguiente pedido:` : CONFIG.whatsapp.greeting,
-    "",
-    ...lineas,
-    "",
-    `*TOTAL: ${CONFIG.store.currencySymbol}${total.toLocaleString("es-AR")}*`,
-    "",
-    "¿Podés confirmar disponibilidad y coordinar el envío?",
-  ].join("\n")
-
-  return `https://wa.me/${CONFIG.whatsapp.number}?text=${encodeURIComponent(mensaje)}`
-}
 
 // ── Componente fila de item ───────────────────────────────────────────────────
 function CartItem({ item }) {
@@ -36,10 +16,12 @@ function CartItem({ item }) {
   return (
     <div className="flex items-center gap-4 bg-brand-dark-card rounded-xl p-4 animate-fade-in">
       {/* Imagen
-          REEMPLAZAR: cambiá item.imagen por tu foto real */}
+          REEMPLAZAR: cambia item.imagen por tu foto real */}
       <img
         src={item.imagen}
         alt={item.nombre}
+        width={80}
+        height={80}
         className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
       />
 
@@ -50,39 +32,51 @@ function CartItem({ item }) {
         </h3>
         <p className="text-brand-muted text-xs mt-0.5">{item.categoria}</p>
         <p className="text-brand-orange font-bold text-sm mt-1">
-          {CONFIG.store.currencySymbol}{item.precio.toLocaleString("es-AR")} c/u
+          {formatoCOP(item.precio)} c/u
         </p>
       </div>
 
       {/* Control de cantidad */}
-      <div className="flex items-center gap-2 flex-shrink-0">
-        <button
-          onClick={() => updateQty(item.id, item.cantidad - 1)}
-          className="w-8 h-8 rounded-lg bg-brand-dark-3 text-white hover:bg-brand-orange transition-colors flex items-center justify-center font-bold cursor-pointer"
-          aria-label="Reducir cantidad"
-        >
-          −
-        </button>
-        <span className="text-white font-semibold w-6 text-center">{item.cantidad}</span>
-        <button
-          onClick={() => updateQty(item.id, item.cantidad + 1)}
-          className="w-8 h-8 rounded-lg bg-brand-dark-3 text-white hover:bg-brand-orange transition-colors flex items-center justify-center font-bold cursor-pointer"
-          aria-label="Aumentar cantidad"
-        >
-          +
-        </button>
+      <div className="flex flex-col items-center gap-1 flex-shrink-0">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => updateQty(item.cartId || item.id, item.cantidad - 1)}
+            className="w-8 h-8 rounded-lg bg-brand-dark-3 text-white hover:bg-brand-orange transition-colors flex items-center justify-center font-bold cursor-pointer"
+            aria-label="Reducir cantidad"
+          >
+            −
+          </button>
+          <span className="text-white font-semibold w-6 text-center">{item.cantidad}</span>
+          <button
+            onClick={() => updateQty(item.cartId || item.id, item.cantidad + 1)}
+            disabled={item.cantidad >= (item.stock ?? 99)}
+            className={`w-8 h-8 rounded-lg bg-brand-dark-3 text-white transition-colors flex items-center justify-center font-bold
+              ${item.cantidad >= (item.stock ?? 99)
+                ? "opacity-30 cursor-not-allowed"
+                : "hover:bg-brand-orange cursor-pointer"
+              }`}
+            aria-label="Aumentar cantidad"
+          >
+            +
+          </button>
+        </div>
+        {item.cantidad >= (item.stock ?? 99) && (
+          <span className="text-[10px] text-yellow-500 font-semibold uppercase tracking-wider">
+            Max. disponible
+          </span>
+        )}
       </div>
 
       {/* Subtotal */}
       <div className="text-right flex-shrink-0">
         <p className="text-brand-orange font-bold text-sm sm:text-base">
-          {CONFIG.store.currencySymbol}{(item.precio * item.cantidad).toLocaleString("es-AR")}
+          {formatoCOP(item.precio * item.cantidad)}
         </p>
       </div>
 
       {/* Eliminar */}
       <button
-        onClick={() => removeItem(item.id)}
+        onClick={() => removeItem(item.cartId || item.id)}
         className="text-brand-muted hover:text-red-400 transition-colors flex-shrink-0 cursor-pointer p-1"
         aria-label="Eliminar del carrito"
       >
@@ -96,8 +90,16 @@ function CartItem({ item }) {
 
 // ── Página principal del carrito ─────────────────────────────────────────────
 export default function Carrito() {
+  useSEO({
+    title: "Mi carrito",
+    description: "Revisa tu pedido y envíalo por WhatsApp."
+  })
+
   const { items, totalItems, totalPrice, clearCart } = useCart()
   const [nombreCliente, setNombreCliente] = useState("")
+  const [metodoPago, setMetodoPago] = useState("")
+  const [metodoEnvio, setMetodoEnvio] = useState("")
+  const [orderId] = useState(() => Math.random().toString(36).substring(2, 6).toUpperCase())
 
   // ── Carrito vacío ─────────────────────────────────────────────────────────
   if (items.length === 0) {
@@ -109,7 +111,7 @@ export default function Carrito() {
             TU CARRITO ESTÁ VACÍO
           </h2>
           <p className="text-brand-muted text-lg mb-8">
-            Agregá productos desde el catálogo para armar tu pedido.
+            Agrega productos desde el catálogo para armar tu pedido.
           </p>
           <Link to="/catalogo" className="btn-primary text-lg px-10 py-4 shadow-lg shadow-brand-orange/20">
             Ir al catálogo
@@ -122,8 +124,19 @@ export default function Carrito() {
            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
              {destacados.map(p => (
                <Link key={p.id} to={`/producto/${p.id}`} className="card group flex flex-col overflow-hidden">
-                 <div className="aspect-square relative overflow-hidden"><img src={p.imagen} className="object-cover w-full h-full group-hover:scale-105 transition-transform"/></div>
-                 <div className="p-3"><h4 className="text-sm font-semibold text-white line-clamp-1">{p.nombre}</h4><p className="text-brand-orange font-bold text-sm mt-1">{CONFIG.store.currencySymbol}{p.precio.toLocaleString("es-AR")}</p></div>
+                 <div className="aspect-square relative overflow-hidden">
+                   <img
+                     src={p.imagen}
+                     alt={p.nombre}
+                     width={260}
+                     height={260}
+                     className="object-cover w-full h-full group-hover:scale-105 transition-transform"
+                   />
+                 </div>
+                 <div className="p-3">
+                   <h4 className="text-sm font-semibold text-white line-clamp-1">{p.nombre}</h4>
+                   <p className="text-brand-orange font-bold text-sm mt-1">{formatoCOP(p.precio)}</p>
+                 </div>
                </Link>
              ))}
            </div>
@@ -131,8 +144,6 @@ export default function Carrito() {
       </div>
     )
   }
-
-  const whatsappLink = generarLinkWhatsApp(items, totalPrice)
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
@@ -175,12 +186,12 @@ export default function Carrito() {
             {/* Detalle de items */}
             <div className="flex flex-col gap-3 mb-5">
               {items.map(item => (
-                <div key={item.id} className="flex justify-between text-sm">
+                <div key={item.cartId || item.id} className="flex justify-between text-sm">
                   <span className="text-brand-muted line-clamp-1 flex-1 mr-2">
                     {item.nombre} x{item.cantidad}
                   </span>
                   <span className="text-white font-medium flex-shrink-0">
-                    {CONFIG.store.currencySymbol}{(item.precio * item.cantidad).toLocaleString("es-AR")}
+                    {formatoCOP(item.precio * item.cantidad)}
                   </span>
                 </div>
               ))}
@@ -196,19 +207,44 @@ export default function Carrito() {
             <div className="flex justify-between items-baseline mb-6">
               <span className="text-white font-bold text-lg">Total</span>
               <span className="text-brand-orange font-bold text-2xl">
-                {CONFIG.store.currencySymbol}{totalPrice.toLocaleString("es-AR")}
+                {formatoCOP(totalPrice)}
               </span>
             </div>
 
             <div className="mb-4 text-sm mt-4">
-               <label className="text-brand-muted block mb-1 font-semibold">Tu Nombre (Opcional)</label>
-               <input 
-                 type="text" 
-                 value={nombreCliente} 
-                 onChange={e => setNombreCliente(e.target.value)} 
-                 placeholder="Ej. Leonardo" 
-                 className="w-full bg-brand-dark-3 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-brand-orange/50 transition-colors"
+               <label htmlFor="carrito-nombre" className="text-brand-muted block mb-1 font-semibold">Tu Nombre</label>
+               <input
+                 id="carrito-nombre"
+                 type="text"
+                 value={nombreCliente}
+                 onChange={e => setNombreCliente(e.target.value)}
+                 placeholder="Ej. Leonardo"
+                 className="w-full bg-brand-dark-3 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-brand-orange/50 transition-colors mb-4"
                />
+
+               <label htmlFor="carrito-envio" className="text-brand-muted block mb-1 font-semibold">Método de Envío</label>
+               <select
+                 id="carrito-envio"
+                 value={metodoEnvio}
+                 onChange={e => setMetodoEnvio(e.target.value)}
+                 className="w-full bg-brand-dark-3 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-brand-orange/50 transition-colors mb-4 appearance-none"
+               >
+                 <option value="" disabled>Selecciona una opción</option>
+                 <option value="Retiro por el Local">Retiro por el Local</option>
+                 <option value="Envío a Domicilio">Envío a Domicilio</option>
+               </select>
+
+               <label htmlFor="carrito-pago" className="text-brand-muted block mb-1 font-semibold">Forma de Pago</label>
+               <select
+                 id="carrito-pago"
+                 value={metodoPago}
+                 onChange={e => setMetodoPago(e.target.value)}
+                 className="w-full bg-brand-dark-3 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-brand-orange/50 transition-colors mb-2 appearance-none"
+               >
+                 <option value="" disabled>Selecciona una opción</option>
+                 <option value="Transferencia / Alias">Transferencia / Alias</option>
+                 <option value="Efectivo al entregar">Efectivo al entregar</option>
+               </select>
             </div>
 
             {/* ── BOTÓN WHATSAPP ──────────────────────────────────
@@ -217,7 +253,7 @@ export default function Carrito() {
                 El número se configura en src/config.js
             */}
             <a
-              href={generarLinkWhatsApp(items, totalPrice, nombreCliente)}
+              href={generarLinkWhatsApp(items, totalPrice, nombreCliente, metodoPago, metodoEnvio, orderId)}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full flex items-center justify-center gap-3 bg-green-600 hover:bg-green-500 text-white font-bold py-4 px-6 mt-2 rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-lg shadow-green-600/20"
@@ -226,12 +262,15 @@ export default function Carrito() {
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
               </svg>
-              Pedir por WhatsApp
+              Completar pedido por WhatsApp
             </a>
 
-            <p className="text-brand-muted text-xs text-center mt-3 leading-relaxed">
-              Se abrirá WhatsApp con el resumen de tu pedido listo para enviar.
-            </p>
+            <div className="flex items-center justify-center gap-2 mt-4 text-brand-muted text-xs">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+              </svg>
+              🔒 Checkout Seguro de LEOFIT vía WhatsApp
+            </div>
 
             {/* Seguir comprando */}
             <Link

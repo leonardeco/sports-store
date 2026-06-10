@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 import { useCart } from "../context/CartContext"
-import { CONFIG } from "../config"
+import { formatoCOP } from "../utils/moneda"
 
 export default function CartDrawer() {
   const { isCartOpen, closeCart, items, totalItems, totalPrice, removeItem, updateQty } = useCart()
@@ -10,9 +10,10 @@ export default function CartDrawer() {
   return (
     <>
       {/* Overlay Oscuro */}
-      <div 
+      <div
         className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] transition-opacity"
         onClick={closeCart}
+        aria-hidden="true"
       />
       
       {/* Panel del Drawer */}
@@ -41,20 +42,20 @@ export default function CartDrawer() {
             </div>
           ) : (
             items.map(item => (
-              <div key={item.id} className="flex gap-4 items-center bg-brand-dark-3 p-3 rounded-xl border border-white/5">
-                <img src={item.imagen} alt={item.nombre} className="w-16 h-16 rounded-md object-cover" />
+              <div key={item.cartId || item.id} className="flex gap-4 items-center bg-brand-dark-3 p-3 rounded-xl border border-white/5">
+                <img src={item.imagen} alt={item.nombre} width={64} height={64} className="w-16 h-16 rounded-md object-cover" />
                 <div className="flex-1 min-w-0">
                   <h4 className="text-white text-sm font-semibold line-clamp-1">{item.nombre}</h4>
-                  <p className="text-brand-orange font-bold text-sm">{CONFIG.store.currencySymbol}{item.precio.toLocaleString("es-AR")}</p>
+                  <p className="text-brand-orange font-bold text-sm">{formatoCOP(item.precio)}</p>
                 </div>
                 <div className="flex flex-col items-end gap-2">
-                  <button onClick={() => removeItem(item.id)} className="text-brand-muted hover:text-red-400">
+                  <button onClick={() => removeItem(item.cartId || item.id)} className="text-brand-muted hover:text-red-400">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                   </button>
                   <div className="flex items-center gap-2 text-xs">
-                     <button onClick={() => updateQty(item.id, item.cantidad - 1)} className="w-6 h-6 bg-brand-dark-card text-white rounded flex items-center justify-center hover:bg-brand-orange">-</button>
+                     <button onClick={() => updateQty(item.cartId || item.id, item.cantidad - 1)} className="w-6 h-6 bg-brand-dark-card text-white rounded flex items-center justify-center hover:bg-brand-orange">-</button>
                      <span className="text-white">{item.cantidad}</span>
-                     <button onClick={() => updateQty(item.id, item.cantidad + 1)} className="w-6 h-6 bg-brand-dark-card text-white rounded flex items-center justify-center hover:bg-brand-orange">+</button>
+                     <button onClick={() => updateQty(item.cartId || item.id, item.cantidad + 1)} className="w-6 h-6 bg-brand-dark-card text-white rounded flex items-center justify-center hover:bg-brand-orange">+</button>
                   </div>
                 </div>
               </div>
@@ -67,7 +68,7 @@ export default function CartDrawer() {
           <div className="p-6 border-t border-white/10 bg-brand-dark-card">
             <div className="flex justify-between items-center mb-6">
               <span className="text-white font-bold text-lg">Total estimado:</span>
-              <span className="text-brand-orange font-bold text-2xl">{CONFIG.store.currencySymbol}{totalPrice.toLocaleString("es-AR")}</span>
+              <span className="text-brand-orange font-bold text-2xl">{formatoCOP(totalPrice)}</span>
             </div>
             
             <div className="flex flex-col gap-3">

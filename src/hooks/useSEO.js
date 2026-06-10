@@ -1,33 +1,59 @@
 import { useEffect } from "react"
 import { CONFIG } from "../config"
 
-export default function useSEO({ title, description }) {
+function setMeta(selector, value) {
+  let el = document.querySelector(selector)
+  if (!el) {
+    const match = selector.match(/\[(.+?)="(.+?)"\]/)
+    el = document.createElement("meta")
+    el.setAttribute(match[1], match[2])
+    document.head.appendChild(el)
+  }
+  const prev = el.getAttribute("content")
+  el.setAttribute("content", value)
+  return prev
+}
+
+export default function useSEO({ title, description, image }) {
   useEffect(() => {
-    // Actualizar el título
+    const fullTitle = title ? `${title} — ${CONFIG.store.name}` : CONFIG.store.name
+
+    // ── <title> ───────────────────────────────────────────────
     const previousTitle = document.title
-    document.title = title ? `${title} — ${CONFIG.store.name}` : CONFIG.store.name
+    document.title = fullTitle
 
-    // Actualizar la descripción
-    let metaDescription = document.querySelector('meta[name="description"]')
-    const previousDescription = metaDescription?.getAttribute("content")
+    // ── meta description ──────────────────────────────────────
+    const previousDescription = description
+      ? setMeta('meta[name="description"]', description)
+      : null
 
-    if (description) {
-      if (metaDescription) {
-        metaDescription.setAttribute("content", description)
-      } else {
-        metaDescription = document.createElement("meta")
-        metaDescription.name = "description"
-        metaDescription.content = description
-        document.head.appendChild(metaDescription)
-      }
-    }
+    // ── Open Graph ────────────────────────────────────────────
+    const previousOGTitle       = setMeta('meta[property="og:title"]', fullTitle)
+    const previousOGDescription = description
+      ? setMeta('meta[property="og:description"]', description)
+      : null
+    const previousOGImage = image
+      ? setMeta('meta[property="og:image"]', image)
+      : null
 
-    // Cleanup (opcional, restaura el estado anterior si se desmonta)
+    // ── Twitter Card ──────────────────────────────────────────
+    const previousTWTitle       = setMeta('meta[name="twitter:title"]', fullTitle)
+    const previousTWDescription = description
+      ? setMeta('meta[name="twitter:description"]', description)
+      : null
+    const previousTWImage = image
+      ? setMeta('meta[name="twitter:image"]', image)
+      : null
+
     return () => {
       document.title = previousTitle
-      if (metaDescription && previousDescription) {
-        metaDescription.setAttribute("content", previousDescription)
-      }
+      if (previousDescription)    setMeta('meta[name="description"]',          previousDescription)
+      if (previousOGTitle)        setMeta('meta[property="og:title"]',         previousOGTitle)
+      if (previousOGDescription)  setMeta('meta[property="og:description"]',   previousOGDescription)
+      if (previousOGImage)        setMeta('meta[property="og:image"]',         previousOGImage)
+      if (previousTWTitle)        setMeta('meta[name="twitter:title"]',        previousTWTitle)
+      if (previousTWDescription)  setMeta('meta[name="twitter:description"]',  previousTWDescription)
+      if (previousTWImage)        setMeta('meta[name="twitter:image"]',        previousTWImage)
     }
-  }, [title, description])
+  }, [title, description, image])
 }

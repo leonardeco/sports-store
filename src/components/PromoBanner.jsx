@@ -4,9 +4,11 @@ export default function PromoBanner() {
       <div className="animate-[marquee_20s_linear_infinite] inline-flex items-center gap-12 sm:gap-24">
         {[...Array(6)].map((_, i) => (
           <span key={i} className="flex items-center gap-4">
-            <span>🚀 ENVÍOS A TODO EL PAÍS EN 24HS</span>
+            <span>🔥 ENVÍO GRATIS DESDE $150.000</span>
             <span className="opacity-50">•</span>
-            <span>🎁 LLEVATE DESCUENTOS Y REGALOS EXCLUSIVOS ARMANDO TU COMBO</span>
+            <span>📦 PRODUCTOS 100% ORIGINALES</span>
+            <span className="opacity-50">•</span>
+            <span>⚡ DESCUENTO EN CREATINAS</span>
             <span className="opacity-50">•</span>
           </span>
         ))}

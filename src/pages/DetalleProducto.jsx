@@ -1,10 +1,11 @@
-import { useParams, useNavigate, Link, Navigate } from "react-router-dom"
+import { useParams, Link, Navigate } from "react-router-dom"
 import { useCart } from "../context/CartContext"
 import { useToast } from "../context/ToastContext"
 import { useState, useEffect } from "react"
 import productos from "../data/productos.json"
-import { CONFIG } from "../config"
+import { CONFIG, SITE_URL } from "../config"
 import useSEO from "../hooks/useSEO"
+import { formatoCOP } from "../utils/moneda"
 
 // Colores de badges
 const badgeColors = {
@@ -15,50 +16,55 @@ const badgeColors = {
   "Destacado":   "bg-purple-500 text-white",
 }
 
-function getRating(id) {
-  const rating = 4.5 + (id % 6) * 0.1;
-  const reviews = 80 + (id * 17) % 300;
-  return { rating: rating.toFixed(1), reviews };
-}
+
 
 export default function DetalleProducto() {
   const { id } = useParams()
-  const navigate = useNavigate()
-  const { addItem, isInCart } = useCart()
+  const { addItem, countInCart } = useCart()
   const { addToast } = useToast()
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
   const [vistos, setVistos] = useState([])
 
   const producto = productos.find(p => p.id === parseInt(id))
   
-  // Fake safe rating
-  const { rating, reviews } = producto ? getRating(producto.id) : { rating: "5.0", reviews: 0 }
+
+
+  // Variantes lógicas basadas en categoría (Simuladas)
+  const variantesDisponibles = producto ? (
+    ["Proteínas", "Creatinas", "Otros Suplementos"].includes(producto.categoria) 
+      ? ["Chocolate", "Vainilla", "Fresa", "Neutro"]
+      : producto.categoria === "Preentrenos" 
+        ? ["Punch", "Limón", "Blue Raspberry"] 
+        : ["Talla Única"]
+  ) : []
+  const [selectedVariant, setSelectedVariant] = useState(variantesDisponibles[0])
 
   useSEO({
     title: producto ? producto.nombre : "Producto no encontrado",
-    description: producto ? producto.descripcion : "Detalle del producto en LEOFIT"
+    description: producto ? producto.descripcion : "Detalle del producto en LEOFIT",
+    image: producto ? `${SITE_URL}${producto.imagen}` : undefined
   })
 
-  if (!producto) {
-    return <Navigate to="/catalogo" replace />
-  }
+  useEffect(() => {
+    if (producto && !variantesDisponibles.includes(selectedVariant)) {
+      setSelectedVariant(variantesDisponibles[0])
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [producto])
 
-  const enCarrito = isInCart(producto.id)
+  const inCartCount = countInCart(producto?.id)
 
   const handleBotonCarrito = () => {
-    if (enCarrito) {
-      navigate("/carrito")
-    } else {
-      addItem(producto)
-      addToast(`✅ ${producto.nombre} agregado al carrito`)
-    }
+    const itemCartId = `${producto.id}-${selectedVariant}`
+    addItem({ ...producto, cartId: itemCartId, variante: selectedVariant })
+    addToast(`✅ ${producto.nombre} (${selectedVariant}) agregado al carrito`)
   }
 
   // Productos relacionados: priorizar misma marca, luego misma categoría (hasta 4)
-  const relacionados = [
+  const relacionados = producto ? [
     ...productos.filter(p => p.marca === producto.marca && p.id !== producto.id),
     ...productos.filter(p => p.marca !== producto.marca && p.categoria === producto.categoria && p.id !== producto.id),
-  ].slice(0, 4)
+  ].slice(0, 4) : []
 
   // Historial locales
   useEffect(() => {
@@ -75,15 +81,23 @@ export default function DetalleProducto() {
     }
   }, [producto])
 
+  if (!producto) {
+    return <Navigate to="/catalogo" replace />
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
     
       {/* Lightbox */}
       {isLightboxOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center cursor-pointer opacity-0 animate-fade-in"
           style={{ animationFillMode: "forwards" }}
           onClick={() => setIsLightboxOpen(false)}
+          onKeyDown={e => e.key === "Escape" && setIsLightboxOpen(false)}
+          role="button"
+          tabIndex={0}
+          aria-label="Cerrar imagen ampliada"
         >
           <button className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-10 h-10"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
@@ -112,12 +126,16 @@ export default function DetalleProducto() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16">
 
         {/* ── Imagen ─────────────────────────────────────────────
-            REEMPLAZAR: cambiá producto.imagen por tu foto real.
+            REEMPLAZAR: cambia producto.imagen por tu foto real.
             Ejemplo: src="/imagenes/whey-protein-gold.jpg"
         */}
-        <div 
+        <div
           className="relative rounded-2xl overflow-hidden aspect-square bg-brand-dark-card cursor-zoom-in group"
           onClick={() => setIsLightboxOpen(true)}
+          onKeyDown={e => e.key === "Enter" && setIsLightboxOpen(true)}
+          role="button"
+          tabIndex={0}
+          aria-label="Ampliar imagen del producto"
         >
           {producto.badge && (
             <span
@@ -129,6 +147,8 @@ export default function DetalleProducto() {
           <img
             src={producto.imagen}
             alt={producto.nombre}
+            width={600}
+            height={600}
             referrerPolicy="no-referrer"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
@@ -156,14 +176,7 @@ export default function DetalleProducto() {
             </span>
           </div>
 
-          {/* Social Proof Estrellas */}
-          <div className="flex items-center gap-2 mb-4">
-             <div className="text-yellow-500 text-sm tracking-tighter">★★★★★</div>
-             <span className="text-white font-bold text-sm">{rating}</span>
-             <span className="text-brand-muted text-sm ml-1 hover:text-brand-orange cursor-pointer underline decoration-brand-muted/30 underline-offset-4">
-                ({reviews} reseñas verificadas)
-             </span>
-          </div>
+
 
           {/* Nombre */}
           <h1 className="font-display text-4xl sm:text-5xl text-white leading-tight mb-4">
@@ -173,7 +186,7 @@ export default function DetalleProducto() {
           {/* Precio */}
           <div className="flex items-baseline gap-3 mb-6">
             <span className="text-brand-orange font-bold text-4xl">
-              {CONFIG.store.currencySymbol}{producto.precio.toLocaleString("es-AR")}
+              {formatoCOP(producto.precio)}
             </span>
             <span className="text-brand-muted text-sm">{CONFIG.store.currency}</span>
           </div>
@@ -183,45 +196,53 @@ export default function DetalleProducto() {
             {producto.descripcion}
           </p>
 
-          {/* Stock */}
-          <div className="flex items-center gap-2 mb-6">
-            {producto.stock > 5 ? (
-              <>
-                <span className="w-2 h-2 rounded-full bg-green-500 inline-block" />
-                <span className="text-green-400 text-sm font-medium">En stock ({producto.stock} disponibles)</span>
-              </>
-            ) : producto.stock > 0 ? (
-              <>
-                <span className="w-2 h-2 rounded-full bg-yellow-500 inline-block" />
-                <span className="text-yellow-400 text-sm font-medium">¡Últimas {producto.stock} unidades!</span>
-              </>
-            ) : (
-              <>
-                <span className="w-2 h-2 rounded-full bg-red-500 inline-block" />
-                <span className="text-red-400 text-sm font-medium">Sin stock</span>
-              </>
-            )}
+          {/* ── SELECTOR DE VARIANTES ──────────────────────── */}
+          <div className="mb-6">
+            <h4 className="text-white text-sm font-semibold mb-3 tracking-wide">
+              Seleccionar Variante: <span className="text-brand-orange font-normal">{selectedVariant}</span>
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {variantesDisponibles.map(v => (
+                <button
+                  key={v}
+                  onClick={() => setSelectedVariant(v)}
+                  className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 border ${selectedVariant === v ? 'bg-brand-orange border-brand-orange text-white shadow-lg shadow-brand-orange/20' : 'bg-brand-dark-3 border-white/5 text-gray-400 hover:text-white hover:border-white/20'}`}
+                >
+                  {v}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Botón principal */}
-          <button
-            onClick={handleBotonCarrito}
-            disabled={producto.stock === 0}
-            className={`w-full text-lg py-4 rounded-xl font-bold transition-all duration-200 cursor-pointer mb-3
-              ${enCarrito
-                ? "bg-green-600 hover:bg-green-500 text-white"
-                : producto.stock === 0
-                  ? "bg-brand-dark-card text-brand-muted cursor-not-allowed"
-                  : "bg-brand-orange hover:bg-brand-orange-light text-white hover:scale-[1.02] active:scale-[0.98]"
-              }`}
-          >
-            {enCarrito
-              ? "✓ Ver mi carrito"
-              : producto.stock === 0
-                ? "Sin stock"
-                : "Agregar al carrito"
-            }
-          </button>
+          <div className="flex items-center gap-3 mb-3">
+            <button
+              onClick={handleBotonCarrito}
+              disabled={producto.stock === 0}
+              className={`flex-1 text-lg py-4 rounded-xl font-bold transition-all duration-200 cursor-pointer 
+                ${producto.stock === 0
+                    ? "bg-brand-dark-card text-brand-muted cursor-not-allowed"
+                    : "bg-brand-orange hover:bg-brand-orange-light text-white hover:scale-[1.02] active:scale-[0.98]"
+                }`}
+            >
+              {producto.stock === 0 ? "Sin stock" : "Agregar al carrito"}
+            </button>
+            {inCartCount > 0 && (
+               <Link to="/carrito" className="bg-brand-dark-3 text-white border border-white/10 hover:border-brand-orange/50 py-4 px-6 rounded-xl transition-colors font-bold flex items-center justify-center">
+                 🛒
+                 <span className="w-5 h-5 bg-brand-orange text-white text-[10px] rounded-full flex items-center justify-center absolute -top-1 -right-1 shadow-lg pointer-events-none translate-x-1 translate-y-1">
+                   {inCartCount}
+                 </span>
+               </Link>
+            )}
+          </div>
+
+          {/* ── Trust Badges ────────────────── */}
+          <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-brand-muted mt-2 mb-2 px-1">
+            <span className="flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 text-green-500"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg> Pago Seguro</span>
+            <span className="flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 text-brand-orange"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg> Envíos Nacionales</span>
+            <span className="flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 text-brand-neon"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg> Originales</span>
+          </div>
 
           {/* Link volver al catálogo */}
           <Link
@@ -282,7 +303,7 @@ export default function DetalleProducto() {
                   <p className="text-xs text-brand-muted uppercase">{p.categoria}</p>
                   <h4 className="text-white text-sm font-semibold mt-1 line-clamp-2">{p.nombre}</h4>
                   <p className="text-brand-orange font-bold mt-1">
-                    {CONFIG.store.currencySymbol}{p.precio.toLocaleString("es-AR")}
+                    {formatoCOP(p.precio)}
                   </p>
                 </div>
               </Link>
@@ -305,13 +326,27 @@ export default function DetalleProducto() {
                 </div>
                 <div className="p-3 pt-0">
                   <h4 className="text-white text-xs font-semibold line-clamp-1">{p.nombre}</h4>
-                  <p className="text-brand-orange font-bold text-sm mt-1">{CONFIG.store.currencySymbol}{p.precio.toLocaleString("es-AR")}</p>
+                  <p className="text-brand-orange font-bold text-sm mt-1">{formatoCOP(p.precio)}</p>
                 </div>
               </Link>
             ))}
           </div>
         </section>
       )}
+      {/* ── Sticky Botón Mobile ──────────────────────────────── */}
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 p-4 pb-6 bg-brand-dark/90 backdrop-blur-xl border-t border-white/10 z-40 flex items-center gap-4 animate-slide-up shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+        <div className="flex-1 min-w-0">
+          <p className="text-white text-sm font-bold line-clamp-1">{producto.nombre}</p>
+          <p className="text-brand-orange font-bold text-xs">{selectedVariant}</p>
+        </div>
+        <button
+          onClick={handleBotonCarrito}
+          disabled={producto.stock === 0}
+          className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex-shrink-0 ${producto.stock === 0 ? 'bg-brand-dark-3 text-brand-muted cursor-not-allowed' : 'bg-brand-orange hover:bg-brand-orange-light text-white shadow-lg shadow-brand-orange/30 active:scale-95'}`}
+        >
+          {producto.stock === 0 ? "Sin stock" : "Agregar"}
+        </button>
+      </div>
     </div>
   )
 }

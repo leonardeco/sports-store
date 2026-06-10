@@ -46,8 +46,8 @@
 
   /* Tarjeta oscura con hover naranja glow */
   .card {
-    @apply bg-brand-dark-card rounded-xl border border-white/5
-           hover:border-brand-orange/60 transition-all duration-300;
+    @apply bg-brand-dark-card/90 backdrop-blur-md rounded-2xl border border-transparent
+           hover:border-brand-orange/40 transition-all duration-300;
   }
   .card:hover {
     box-shadow: 0 0 25px -5px rgba(255, 107, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
@@ -134,18 +134,17 @@
 
   /* ── Toast / Notificaciones ────────────────────────────────── */
   .toast-notification {
-    @apply flex items-center gap-3 px-4 py-3 rounded-xl shadow-xl border pointer-events-auto;
-    animation: toastIn 0.3s ease-out;
-    min-width: 240px;
+    @apply flex items-center gap-3 px-5 py-4 rounded-2xl shadow-2xl border border-white/10 pointer-events-auto;
+    animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    min-width: 260px;
     max-width: 320px;
+    backdrop-filter: blur(12px);
   }
   .toast-success {
-    @apply bg-green-900/90 border-green-500/40 text-green-300;
-    backdrop-filter: blur(8px);
+    @apply bg-brand-dark-card/80 border-brand-orange/50 text-white shadow-brand-orange/10;
   }
   .toast-info {
-    @apply bg-brand-dark-card border-white/10 text-white;
-    backdrop-filter: blur(8px);
+    @apply bg-brand-dark-card/80 border-white/10 text-white;
   }
 
 }
