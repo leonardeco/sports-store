@@ -40,7 +40,8 @@ export function ToastProvider({ children }) {
   )
 }
 
-export function useToast() {
+// eslint-disable-next-line react-refresh/only-export-components
+export const useToast = () => {
   const ctx = useContext(ToastContext)
   if (!ctx) throw new Error("useToast debe usarse dentro de ToastProvider")
   return ctx
