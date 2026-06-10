@@ -4,6 +4,7 @@ import { useState } from "react"
 import { CONFIG } from "../config"
 import productos from "../data/productos.json"
 import { formatoCOP } from "../utils/moneda"
+import useSEO from "../hooks/useSEO"
 
 // Destacados para upselling
 const destacados = productos.filter(p => p.destacado).slice(0, 4)
@@ -115,6 +116,11 @@ function CartItem({ item }) {
 
 // ── Página principal del carrito ─────────────────────────────────────────────
 export default function Carrito() {
+  useSEO({
+    title: "Mi carrito",
+    description: "Revisa tu pedido y envíalo por WhatsApp."
+  })
+
   const { items, totalItems, totalPrice, clearCart } = useCart()
   const [nombreCliente, setNombreCliente] = useState("")
   const [metodoPago, setMetodoPago] = useState("")

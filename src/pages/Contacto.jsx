@@ -1,7 +1,13 @@
 import { useState } from "react"
 import { CONFIG } from "../config"
+import useSEO from "../hooks/useSEO"
 
 export default function Contacto() {
+  useSEO({
+    title: "Contacto",
+    description: "Escríbenos y te respondemos lo antes posible."
+  })
+
   const [form, setForm]     = useState({ nombre: "", email: "", mensaje: "" })
   const [enviado, setEnviado] = useState(false)
   const [enviando, setEnviando] = useState(false)

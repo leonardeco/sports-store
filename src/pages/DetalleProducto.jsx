@@ -3,7 +3,7 @@ import { useCart } from "../context/CartContext"
 import { useToast } from "../context/ToastContext"
 import { useState, useEffect } from "react"
 import productos from "../data/productos.json"
-import { CONFIG } from "../config"
+import { CONFIG, SITE_URL } from "../config"
 import useSEO from "../hooks/useSEO"
 import { formatoCOP } from "../utils/moneda"
 
@@ -41,7 +41,8 @@ export default function DetalleProducto() {
 
   useSEO({
     title: producto ? producto.nombre : "Producto no encontrado",
-    description: producto ? producto.descripcion : "Detalle del producto en LEOFIT"
+    description: producto ? producto.descripcion : "Detalle del producto en LEOFIT",
+    image: producto ? `${SITE_URL}${producto.imagen}` : undefined
   })
 
   useEffect(() => {

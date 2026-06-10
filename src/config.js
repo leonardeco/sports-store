@@ -3,6 +3,8 @@
 //  Edita este archivo para personalizar el comportamiento
 // ============================================================
 
+export const SITE_URL = "https://leofit.netlify.app"
+
 export const CONFIG = {
   // ─── WhatsApp ─────────────────────────────────────────────
   // IMPORTANTE: reemplaza este número por el tuyo
