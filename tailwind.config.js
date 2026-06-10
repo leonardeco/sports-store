@@ -12,7 +12,7 @@ export default {
           "dark-2":       "#111111",
           "dark-3":       "#1A1A1A",
           "dark-card":    "#1E1E1E",
-          muted:          "#6B7280",
+          muted:          "#9CA3AF",
         },
       },
       fontFamily: {

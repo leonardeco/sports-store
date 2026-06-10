@@ -269,7 +269,7 @@ export default function Home() {
               <p className="text-gray-300 italic text-sm leading-relaxed">&quot;De 10. Pedí la Gold Standard y la Creatina y me llegaron selladitas al día siguiente. El del WhatsApp un crack para asesorarme porque no sabía bien qué llevar.&quot;</p>
             </div>
             <div className="flex items-center gap-3 mt-6">
-               <div className="w-10 h-10 rounded-full bg-brand-orange text-white font-bold flex items-center justify-center">M.R.</div>
+               <div className="w-10 h-10 rounded-full bg-brand-orange text-brand-dark font-bold flex items-center justify-center">M.R.</div>
                <div>
                  <p className="text-white text-sm font-bold">Marcos Riquelme</p>
                  <p className="text-brand-muted text-xs flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500"></span> Compra Verificada</p>
@@ -327,13 +327,13 @@ export default function Home() {
       ══════════════════════════════════════════════════════════ */}
       <section className="bg-brand-orange py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="font-display text-4xl sm:text-5xl text-white tracking-wide mb-3">
+          <h2 className="font-display text-4xl sm:text-5xl text-brand-dark tracking-wide mb-3">
             ¿TIENES DUDAS?
           </h2>
-          <p className="text-white/90 text-lg mb-6">
+          <p className="text-brand-dark/80 text-lg mb-6">
             Escríbenos por WhatsApp y te asesoramos al instante.
           </p>
-          <Link to="/contacto" className="inline-block bg-white text-brand-orange font-bold px-8 py-4 rounded-lg hover:scale-105 transition-transform duration-200">
+          <Link to="/contacto" className="inline-block bg-brand-dark text-white font-bold px-8 py-4 rounded-lg hover:scale-105 transition-transform duration-200">
             Hablar con nosotros
           </Link>
         </div>

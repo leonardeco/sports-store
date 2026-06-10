@@ -5,10 +5,10 @@ import { CONFIG } from "../config"
 import { formatoCOP } from "../utils/moneda"
 
 const badgeColors = {
-  "Más vendido": "bg-brand-orange text-white",
+  "Más vendido": "bg-brand-orange text-brand-dark",
   "Nuevo":       "bg-brand-neon text-brand-dark",
-  "Oferta":      "bg-red-500 text-white",
-  "Destacado":   "bg-purple-500 text-white",
+  "Oferta":      "bg-red-700 text-white",
+  "Destacado":   "bg-purple-700 text-white",
 }
 
 
@@ -41,7 +41,7 @@ export default function ProductCard({ product }) {
 
         {/* Badge */}
         {product.badge && (
-          <span className={`product-badge absolute top-3 left-3 z-10 ${badgeColors[product.badge] || "bg-brand-orange text-white"}`}>
+          <span className={`product-badge absolute top-3 left-3 z-10 ${badgeColors[product.badge] || "bg-brand-orange text-brand-dark"}`}>
             {product.badge}
           </span>
         )}
@@ -110,7 +110,7 @@ export default function ProductCard({ product }) {
             className={`text-sm px-4 py-2 rounded-lg font-semibold transition-all duration-200
               ${product.stock === 0
                 ? "bg-brand-dark-card text-brand-muted cursor-not-allowed"
-                : "bg-brand-orange hover:bg-brand-orange-light text-white hover:scale-105 active:scale-95 cursor-pointer shadow-md shadow-brand-orange/20 hover:shadow-brand-orange/40"}
+                : "bg-brand-orange hover:bg-brand-orange-light text-brand-dark hover:scale-105 active:scale-95 cursor-pointer shadow-md shadow-brand-orange/20 hover:shadow-brand-orange/40"}
               `}
           >
             {product.stock === 0 ? "Agotado" : inCartCount > 0 ? "Agregado ✓" : "Agregar"}
