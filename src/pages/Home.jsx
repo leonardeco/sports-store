@@ -7,13 +7,25 @@ import useSEO from "../hooks/useSEO"
 const destacados = productos.filter(p => p.destacado)
 
 // Categorías con imagen placeholder
-// REEMPLAZAR: cambiá la URL de imagen por tus fotos reales
+// REEMPLAZAR: cambia la URL de imagen por tus fotos reales
 const categorias = [
   {
-    nombre:    "Suplementos",
-    descripcion: "Proteínas, creatina, pre-workout y más",
+    nombre:    "Creatinas",
+    descripcion: "Fuerza, ganancia muscular y máximo rendimiento",
     imagen:    "/img/banners/cat-suplementos.png",
-    link:      "/catalogo?categoria=Suplementos",
+    link:      "/catalogo?categoria=Creatinas",
+  },
+  {
+    nombre:    "Proteínas",
+    descripcion: "Reparación y construcción de masa magra",
+    imagen:    "/img/banners/cat-suplementos.png",
+    link:      "/catalogo?categoria=Proteínas",
+  },
+  {
+    nombre:    "Preentrenos",
+    descripcion: "Energía explosiva y enfoque total en tus rutinas",
+    imagen:    "/img/banners/cat-suplementos.png",
+    link:      "/catalogo?categoria=Preentrenos",
   }
 ]
 
@@ -27,21 +39,26 @@ export default function Home() {
     <div>
       {/* ══════════════════════════════════════════════════════════
           SECCIÓN 1: HERO BANNER
-          REEMPLAZAR: cambiá el fondo del hero por tu foto real.
+          REEMPLAZAR: cambia el fondo del hero por tu foto real.
           En el div de fondo, reemplazá el style background por:
             style={{ backgroundImage: "url('/tu-banner.jpg')" }}
       ══════════════════════════════════════════════════════════ */}
       <section className="relative min-h-[85vh] sm:min-h-[90vh] flex items-center overflow-hidden">
-        {/* Fondo placeholder
-            REEMPLAZAR: background-image por tu banner real */}
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: "url('/img/banners/hero-banner.png')",
-          }}
-        >
+        {/* Fondo de Video 
+            REEMPLAZAR: src="..." por el archivo de tu video real en public/ */}
+        <div className="absolute inset-0">
+          <video 
+            autoPlay 
+            loop 
+            muted 
+            playsInline
+            className="w-full h-full object-cover"
+            style={{ filter: "brightness(0.8)" }}
+          >
+            <source src="https://cdn.pixabay.com/video/2016/11/22/19/24/6479-192534572_tiny.mp4" type="video/mp4" />
+          </video>
           {/* Overlay degradado */}
-          <div className="absolute inset-0 bg-gradient-to-r from-brand-dark via-brand-dark/85 to-brand-dark/20" />
+          <div className="absolute inset-0 bg-gradient-to-r from-brand-dark via-brand-dark/85 to-brand-dark/40" />
         </div>
 
         {/* Contenido del hero */}
@@ -72,7 +89,7 @@ export default function Home() {
             >
               Suplementos deportivos de alta calidad.
               <br className="hidden sm:block" />
-              Pedí por WhatsApp y recibí en tu puerta.
+              Pide por WhatsApp y recibe en tu puerta.
             </p>
 
             {/* Botones CTA */}
@@ -86,6 +103,16 @@ export default function Home() {
               <Link to="/contacto" className="btn-secondary text-center text-lg px-8 py-4">
                 Contactanos
               </Link>
+              <a
+                href="/catalogo.pdf"
+                download="Catalogo_Suplementos_LEOFIT.pdf"
+                className="flex items-center justify-center gap-2 text-center text-lg px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-brand-orange text-white rounded-lg transition-all duration-200 font-semibold"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-brand-orange flex-shrink-0">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                </svg>
+                Catálogo PDF
+              </a>
             </div>
 
             {/* Stats rápidos */}
@@ -114,35 +141,35 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
         <div className="text-center mb-10">
           <h2 className="font-display text-4xl sm:text-5xl text-white tracking-wide">
-            EXPLORÁ POR <span className="text-brand-orange">CATEGORÍA</span>
+            EXPLORA POR <span className="text-brand-orange">CATEGORÍA</span>
           </h2>
-          <p className="text-brand-muted mt-2">Encontrá exactamente lo que necesitás</p>
+          <p className="text-brand-muted mt-2">Encuentra exactamente lo que necesitas</p>
         </div>
 
-        <div className="grid grid-cols-1 md:max-w-4xl md:mx-auto gap-6">
+        <div className="flex gap-5 md:grid md:grid-cols-3 md:max-w-5xl md:mx-auto overflow-x-auto snap-x snap-mandatory pb-6 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
           {categorias.map(cat => (
             <Link
               key={cat.nombre}
               to={cat.link}
-              className="group relative overflow-hidden rounded-2xl aspect-video cursor-pointer"
+              className="group relative overflow-hidden rounded-2xl aspect-[4/5] sm:aspect-video cursor-pointer snap-center min-w-[280px] sm:min-w-0 flex-shrink-0 blur-[0.5px] hover:blur-none transition-all duration-300 z-10 hover:z-20 scale-95 hover:scale-100 shadow-2xl"
             >
               {/* Imagen categoría
-                  REEMPLAZAR: cambiá cat.imagen por tu foto real de cada categoría */}
+                  REEMPLAZAR: cambia cat.imagen por tu foto real de cada categoría */}
               <img
                 src={cat.imagen}
                 alt={cat.nombre}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
               />
               {/* Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-brand-dark/40 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/95 via-brand-dark/50 to-transparent" />
               {/* Texto */}
-              <div className="absolute bottom-0 left-0 p-6">
+              <div className="absolute bottom-0 left-0 p-6 z-20">
                 <h3 className="font-display text-4xl text-white tracking-wide group-hover:text-brand-orange transition-colors duration-300">
                   {cat.nombre.toUpperCase()}
                 </h3>
-                <p className="text-gray-300 text-sm mt-1">{cat.descripcion}</p>
-                <span className="inline-block mt-3 text-brand-orange text-sm font-semibold group-hover:translate-x-1 transition-transform duration-200">
-                  Ver productos →
+                <p className="text-gray-300 text-sm mt-1 mb-2 line-clamp-2">{cat.descripcion}</p>
+                <span className="inline-flex items-center gap-2 mt-2 bg-white/10 backdrop-blur-md text-white font-semibold text-xs py-2 px-4 rounded-full group-hover:bg-brand-orange transition-all duration-300">
+                  Explorar <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
                 </span>
               </div>
             </Link>
@@ -166,9 +193,11 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="flex gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-4 overflow-x-auto snap-x snap-mandatory pb-6 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
           {destacados.map(product => (
-            <ProductCard key={product.id} product={product} />
+            <div key={product.id} className="snap-center min-w-[260px] sm:min-w-0 flex-shrink-0">
+              <ProductCard product={product} />
+            </div>
           ))}
         </div>
 
@@ -237,7 +266,7 @@ export default function Home() {
           <div className="card p-6 min-w-[300px] max-w-[350px] snap-center flex-shrink-0 flex flex-col justify-between">
             <div>
               <div className="text-yellow-500 mb-3 tracking-tighter">★★★★★</div>
-              <p className="text-gray-300 italic text-sm leading-relaxed">&quot;De 10. Pedí la Gold Standard y la Creatina y me llegaron selladitas al día siguiente. El chico del WhatsApp un crack para asesorarme porque no sabía bien qué llevar.&quot;</p>
+              <p className="text-gray-300 italic text-sm leading-relaxed">&quot;De 10. Pedí la Gold Standard y la Creatina y me llegaron selladitas al día siguiente. El del WhatsApp un crack para asesorarme porque no sabía bien qué llevar.&quot;</p>
             </div>
             <div className="flex items-center gap-3 mt-6">
                <div className="w-10 h-10 rounded-full bg-brand-orange text-white font-bold flex items-center justify-center">M.R.</div>
@@ -299,10 +328,10 @@ export default function Home() {
       <section className="bg-brand-orange py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <h2 className="font-display text-4xl sm:text-5xl text-white tracking-wide mb-3">
-            ¿TENÉS DUDAS?
+            ¿TIENES DUDAS?
           </h2>
           <p className="text-white/90 text-lg mb-6">
-            Escribinos por WhatsApp y te asesoramos al instante.
+            Escríbenos por WhatsApp y te asesoramos al instante.
           </p>
           <Link to="/contacto" className="inline-block bg-white text-brand-orange font-bold px-8 py-4 rounded-lg hover:scale-105 transition-transform duration-200">
             Hablar con nosotros

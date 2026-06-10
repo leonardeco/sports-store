@@ -71,7 +71,7 @@ export default function Contacto() {
           CONTACTO
         </h1>
         <p className="text-brand-muted mt-2 text-lg">
-          ¿Tenés alguna pregunta? Escribinos y te respondemos lo antes posible.
+          ¿Tienes alguna pregunta? Escríbenos y te respondemos lo antes posible.
         </p>
       </div>
 
@@ -98,7 +98,7 @@ export default function Contacto() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
               </svg>
               <p className="text-sm font-medium">
-                No pudimos enviar tu mensaje. <a href={`https://wa.me/${CONFIG.whatsapp.number}`} target="_blank" rel="noopener noreferrer" className="underline font-bold">Escribinos directo por WhatsApp</a>
+                No pudimos enviar tu mensaje. <a href={`https://wa.me/${CONFIG.whatsapp.number}`} target="_blank" rel="noopener noreferrer" className="underline font-bold">Escríbenos directo por WhatsApp</a>
               </p>
             </div>
           )}
@@ -151,7 +151,7 @@ export default function Contacto() {
                 value={form.mensaje}
                 onChange={handleChange}
                 rows={5}
-                placeholder="Escribí tu consulta aquí..."
+                placeholder="Escribe tu consulta aquí..."
                 className={`input-field resize-none ${errores.mensaje ? "border-red-500/60 focus:border-red-500" : ""}`}
               />
               {errores.mensaje && (
@@ -191,7 +191,7 @@ export default function Contacto() {
                 La forma más rápida de contactarnos. Respondemos en minutos durante el horario comercial.
               </p>
               <span className="text-green-400 text-sm font-medium mt-2 inline-block group-hover:translate-x-1 transition-transform duration-200">
-                Escribinos →
+                Escríbenos →
               </span>
             </div>
           </a>
@@ -212,7 +212,7 @@ export default function Contacto() {
               <div>
                 <h3 className="text-white font-semibold mb-1">Instagram</h3>
                 <p className="text-brand-muted text-sm">
-                  Seguinos para novedades, promociones y contenido deportivo de calidad.
+                  Síguenos para novedades, promociones y contenido deportivo de calidad.
                 </p>
                 <span className="text-pink-400 text-sm font-medium mt-2 inline-block group-hover:translate-x-1 transition-transform duration-200">
                   Seguir →
@@ -271,7 +271,7 @@ export default function Contacto() {
           <h2 className="font-display text-4xl text-white tracking-wide">
             PREGUNTAS <span className="text-brand-orange">FRECUENTES</span>
           </h2>
-          <p className="text-brand-muted mt-2">Todo lo que necesitás saber antes de comprar</p>
+          <p className="text-brand-muted mt-2">Todo lo que necesitas saber antes de comprar</p>
         </div>
 
         <div className="flex flex-col gap-4">
@@ -290,7 +290,7 @@ export default function Contacto() {
             },
             {
               p: "¿Cómo funciona la compra por WhatsApp?",
-              r: "¡Es súper fácil! Vos elegís tus productos en esta web, tocás 'Mi Carrito' y le das al botón verde. Eso abrirá tu WhatsApp enviándonos tu orden lista y organizada para que concretemos el método de pago inmediatamente."
+              r: "¡Es súper fácil! Tú eliges tus productos en esta web, tocas 'Mi Carrito' y le das al botón verde. Eso abrirá tu WhatsApp enviándonos tu orden lista y organizada para que concretemos el método de pago inmediatamente."
             }
           ].map((faq, i) => (
              <details key={i} className="group bg-brand-dark-card rounded-xl border border-white/5 overflow-hidden">

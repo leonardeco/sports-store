@@ -1,13 +1,13 @@
 // ============================================================
 //  ARCHIVO DE CONFIGURACIÓN CENTRAL DE LA TIENDA
-//  Editá este archivo para personalizar el comportamiento
+//  Edita este archivo para personalizar el comportamiento
 // ============================================================
 
 export const CONFIG = {
   // ─── WhatsApp ─────────────────────────────────────────────
-  // IMPORTANTE: reemplazá este número por el tuyo
+  // IMPORTANTE: reemplaza este número por el tuyo
   // Formato: código de país + número SIN espacios ni "+"
-  // Ejemplo Argentina: 5491123456789
+  // Ejemplo Colombia: 573226993891
   whatsapp: {
     number:   "573226993891",    // Colombia: +57 322 699 3891
     greeting: "¡Hola! Me gustaría hacer el siguiente pedido:",
@@ -16,12 +16,12 @@ export const CONFIG = {
   // ─── Datos de la tienda ───────────────────────────────────
   store: {
     name:           "LEOFIT",
-    tagline:        "Entrenás en serio. Nosotros también.",
-    currency:       "ARS",
-    currencySymbol: "$",
-    // Cambiá este mensaje por el que quieras mostrar en el footer
+    tagline:        "Entrenas en serio. Nosotros también.",
+    currency:       "COP",
+    currencySymbol: "$", // DEPRECATED: Usar formatoCOP de src/utils/moneda en su lugar
+    // Cambia este mensaje por el que quieras mostrar en el footer
     description:    "Suplementos deportivos de las mejores marcas del mundo para los que van en serio.",
-    // Redes sociales (dejá vacío si no tenés)
+    // Redes sociales (deja vacío si no tienes)
     instagram:      "",  // Dejar vacío para ocultar el botón de Instagram
     facebook:       "",
     email:          "leonardecojt@gmail.com",
@@ -29,7 +29,7 @@ export const CONFIG = {
 
   // ─── Categorías y filtros del catálogo ───────────────────
   catalog: {
-    categories: ["Todos", "Suplementos"],
+    categories: ["Todos", "Creatinas", "Proteínas", "Preentrenos", "Otros Suplementos"],
     priceRanges: [
       { label: "Todos los precios",       min: 0,      max: Infinity },
       { label: "Hasta $100.000",          min: 0,      max: 100000   },
@@ -37,6 +37,14 @@ export const CONFIG = {
       { label: "$200.000 - $350.000",     min: 200000, max: 350000   },
       { label: "Más de $350.000",         min: 350000, max: Infinity },
     ],
+  },
+
+  // ─── Configuración de Categorías (Acordeones) ────────────
+  categoriesDef: {
+    "Creatinas":         { color: "#7B2FF2", accent: "#FFFFFF", order: 1 },
+    "Proteínas":         { color: "#003087", accent: "#FFFFFF", order: 2 },
+    "Preentrenos":       { color: "#1A1A1A", accent: "#E5C100", order: 3 },
+    "Otros Suplementos": { color: "#1E1E1E", accent: "#FF6B00", order: 4 },
   },
 
   // ─── Marcas con colores y logos ──────────────────────────

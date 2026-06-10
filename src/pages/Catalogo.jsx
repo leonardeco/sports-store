@@ -5,23 +5,23 @@ import productos from "../data/productos.json"
 import { CONFIG } from "../config"
 import useSEO from "../hooks/useSEO"
 
-// ── Agrupar productos por marca ─────────────────────────────
-function agruparPorMarca(prods) {
+// ── Agrupar productos por categoria ─────────────────────────────
+function agruparPorCategoria(prods) {
   const grupos = {}
   prods.forEach(p => {
-    if (!grupos[p.marca]) grupos[p.marca] = []
-    grupos[p.marca].push(p)
+    if (!grupos[p.categoria]) grupos[p.categoria] = []
+    grupos[p.categoria].push(p)
   })
   return Object.entries(grupos).sort(([a], [b]) => {
-    const orderA = CONFIG.brands[a]?.order ?? 99
-    const orderB = CONFIG.brands[b]?.order ?? 99
+    const orderA = CONFIG.categoriesDef[a]?.order ?? 99
+    const orderB = CONFIG.categoriesDef[b]?.order ?? 99
     return orderA - orderB
   })
 }
 
-// ── Componente Acordeón de Marca ────────────────────────────
-function BrandAccordion({ marca, prods, isOpen, onToggle }) {
-  const brandConfig = CONFIG.brands[marca] || { color: "#1E1E1E", accent: "#FF6B00" }
+// ── Componente Acordeón de Categoria ────────────────────────────
+function CategoryAccordion({ categoria, prods, isOpen, onToggle }) {
+  const catConfig = CONFIG.categoriesDef[categoria] || { color: "#1E1E1E", accent: "#FF6B00" }
   const contentRef = useRef(null)
   const [height, setHeight] = useState(0)
 
@@ -36,33 +36,33 @@ function BrandAccordion({ marca, prods, isOpen, onToggle }) {
       <button
         onClick={onToggle}
         className="w-full flex items-center justify-between px-6 py-5 transition-all duration-300 cursor-pointer group"
-        style={{ background: `linear-gradient(135deg, ${brandConfig.color}CC, ${brandConfig.color}99)` }}
+        style={{ background: `linear-gradient(135deg, ${catConfig.color}CC, ${catConfig.color}99)` }}
       >
         <div className="flex items-center gap-4">
           <div
             className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg overflow-hidden flex-shrink-0"
-            style={{ backgroundColor: brandConfig.accent + "22", border: `1px solid ${brandConfig.accent}44` }}
+            style={{ backgroundColor: catConfig.accent + "22", border: `1px solid ${catConfig.accent}44` }}
           >
-            {brandConfig.logo ? (
-              <img src={brandConfig.logo} alt={marca} className="w-10 h-10 object-contain" style={{ filter: "brightness(0) invert(1)" }} />
+            {catConfig.logo ? (
+              <img src={catConfig.logo} alt={categoria} className="w-10 h-10 object-contain" style={{ filter: "brightness(0) invert(1)" }} />
             ) : (
-              <span className="font-display text-2xl font-bold" style={{ color: brandConfig.accent }}>{marca.charAt(0)}</span>
+              <span className="font-display text-2xl font-bold" style={{ color: catConfig.accent }}>{categoria.charAt(0)}</span>
             )}
           </div>
           <div className="text-left">
-            <h3 className="font-display text-2xl sm:text-3xl text-white tracking-wider">{marca.toUpperCase()}</h3>
+            <h3 className="font-display text-2xl sm:text-3xl text-white tracking-wider">{categoria.toUpperCase()}</h3>
             <p className="text-white/60 text-xs sm:text-sm mt-0.5">
               {prods.length} {prods.length === 1 ? "producto" : "productos"}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-xs font-semibold uppercase tracking-wider hidden sm:block" style={{ color: brandConfig.accent }}>
+          <span className="text-xs font-semibold uppercase tracking-wider hidden sm:block" style={{ color: catConfig.accent }}>
             {isOpen ? "Cerrar" : "Ver productos"}
           </span>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"
             className={`w-5 h-5 transition-transform duration-500 ease-in-out ${isOpen ? "rotate-180" : "rotate-0"}`}
-            style={{ color: brandConfig.accent }}
+            style={{ color: catConfig.accent }}
           >
             <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
           </svg>
@@ -108,8 +108,8 @@ export default function Catalogo() {
   const [busqueda, setBusqueda]          = useState("")
   const [categoriaActiva, setCategoria]  = useState("Todos")
   const [precioIdx, setPrecioIdx]        = useState(0)
-  const [vistaMarcas, setVistaMarcas]    = useState(true)
-  const [marcasAbiertas, setMarcasAbiertas] = useState({})
+  const [vistaCategorias, setVistaCategorias]    = useState(true)
+  const [categoriasAbiertas, setCategoriasAbiertas] = useState({})
   const [marcaFiltro, setMarcaFiltro]    = useState("Todas")
   const [ordenar, setOrdenar]            = useState("marca")
   const [filtrosMobileAbierto, setFiltrosMobileAbierto] = useState(false)
@@ -136,8 +136,8 @@ export default function Catalogo() {
   // Abrir todas las marcas por defecto
   useEffect(() => {
     const todasAbiertas = {}
-    Object.keys(CONFIG.brands).forEach(m => { todasAbiertas[m] = true })
-    setMarcasAbiertas(todasAbiertas)
+    Object.keys(CONFIG.categoriesDef).forEach(m => { todasAbiertas[m] = true })
+    setCategoriasAbiertas(todasAbiertas)
   }, [])
 
   // ── Pipeline de filtros ───────────────────────────────────
@@ -158,11 +158,11 @@ export default function Catalogo() {
       }
     })
 
-  const gruposMarca = agruparPorMarca(productosFiltrados)
+  const gruposCategoria = agruparPorCategoria(productosFiltrados)
 
   const marcasUnicas = [...new Set(productos.map(p => p.marca))].sort((a, b) => {
-    const orderA = CONFIG.brands[a]?.order ?? 99
-    const orderB = CONFIG.brands[b]?.order ?? 99
+    const orderA = CONFIG.categoriesDef[a]?.order ?? 99
+    const orderB = CONFIG.categoriesDef[b]?.order ?? 99
     return orderA - orderB
   })
 
@@ -177,12 +177,11 @@ export default function Catalogo() {
   if (marcaFiltro !== "Todas")     chipsActivos.push({ id: "marca",     label: marcaFiltro,                      onRemove: () => setMarcaFiltro("Todas") })
   if (precioIdx !== 0)             chipsActivos.push({ id: "precio",    label: CONFIG.catalog.priceRanges[precioIdx].label, onRemove: () => setPrecioIdx(0) })
 
-  const hayFiltrosActivos = chipsActivos.length > 0 || ordenar !== "marca"
 
   // ── Toggle acordeón ──────────────────────────────────────
-  const toggleMarca = (marca) => setMarcasAbiertas(prev => ({ ...prev, [marca]: !prev[marca] }))
-  const abrirTodas  = () => { const all = {}; gruposMarca.forEach(([m]) => { all[m] = true }); setMarcasAbiertas(all) }
-  const cerrarTodas = () => setMarcasAbiertas({})
+  const toggleCategoria = (cat) => setCategoriasAbiertas(prev => ({ ...prev, [cat]: !prev[cat] }))
+  const abrirTodas  = () => { const all = {}; gruposCategoria.forEach(([c]) => { all[c] = true }); setCategoriasAbiertas(all) }
+  const cerrarTodas = () => setCategoriasAbiertas({})
 
   // ── Resetear filtros ──────────────────────────────────────
   const resetFiltros = () => {
@@ -210,9 +209,9 @@ export default function Catalogo() {
         {/* Toggle vista */}
         <div className="flex items-center bg-brand-dark-card rounded-xl border border-white/10 p-1">
           <button
-            onClick={() => { setVistaMarcas(false); setOrdenar("precio-asc") }}
+            onClick={() => { setVistaCategorias(false); setOrdenar("precio-asc") }}
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 cursor-pointer flex items-center gap-2
-              ${!vistaMarcas ? "bg-brand-orange text-white shadow-lg shadow-brand-orange/20" : "text-brand-muted hover:text-white"}`}
+              ${!vistaCategorias ? "bg-brand-orange text-white shadow-lg shadow-brand-orange/20" : "text-brand-muted hover:text-white"}`}
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
@@ -220,15 +219,15 @@ export default function Catalogo() {
             Todos
           </button>
           <button
-            onClick={() => { setVistaMarcas(true); setOrdenar("marca") }}
+            onClick={() => { setVistaCategorias(true); setOrdenar("marca") }}
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 cursor-pointer flex items-center gap-2
-              ${vistaMarcas ? "bg-brand-orange text-white shadow-lg shadow-brand-orange/20" : "text-brand-muted hover:text-white"}`}
+              ${vistaCategorias ? "bg-brand-orange text-white shadow-lg shadow-brand-orange/20" : "text-brand-muted hover:text-white"}`}
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" />
             </svg>
-            Por Marca
+            Por Categoría
           </button>
         </div>
       </div>
@@ -312,12 +311,12 @@ export default function Catalogo() {
               onChange={e => {
                 const val = e.target.value
                 setOrdenar(val)
-                if (val !== "marca") setVistaMarcas(false)
-                else setVistaMarcas(true)
+                if (val !== "marca") setVistaCategorias(false)
+                else setVistaCategorias(true)
               }}
               className="input-field col-span-2 sm:col-span-1 sm:w-52 bg-brand-dark-3 cursor-pointer text-sm"
             >
-              <option value="marca">Por marca</option>
+              <option value="marca">Por categoría</option>
               <option value="precio-asc">Precio: menor a mayor</option>
               <option value="precio-desc">Precio: mayor a menor</option>
               <option value="nombre-asc">Nombre: A → Z</option>
@@ -371,11 +370,11 @@ export default function Catalogo() {
       <div ref={resultadosRef} className="flex items-center justify-between mb-6 flex-wrap gap-2">
         <p className="text-brand-muted text-sm">
           <span className="text-white font-semibold">{productosFiltrados.length}</span> productos encontrados
-          {vistaMarcas && gruposMarca.length > 0 && (
-            <span className="text-brand-orange ml-1">· {gruposMarca.length} {gruposMarca.length === 1 ? "marca" : "marcas"}</span>
+          {vistaCategorias && gruposCategoria.length > 0 && (
+            <span className="text-brand-orange ml-1">· {gruposCategoria.length} {gruposCategoria.length === 1 ? "marca" : "marcas"}</span>
           )}
         </p>
-        {vistaMarcas && gruposMarca.length > 0 && (
+        {vistaCategorias && gruposCategoria.length > 0 && (
           <div className="flex gap-3">
             <button onClick={abrirTodas} className="text-xs text-brand-muted hover:text-white transition-colors cursor-pointer">
               Expandir todas
@@ -391,7 +390,7 @@ export default function Catalogo() {
       {/* ══════════════════════════════════════════════════════
           VISTA NORMAL (grid plana)
       ══════════════════════════════════════════════════════ */}
-      {!vistaMarcas && (
+      {!vistaCategorias && (
         productosFiltrados.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {productosFiltrados.map(product => (
@@ -406,7 +405,7 @@ export default function Catalogo() {
               </svg>
             </div>
             <h3 className="text-white text-xl font-semibold mb-2">No encontramos productos</h3>
-            <p className="text-brand-muted mb-6">Probá con otros filtros o buscá algo diferente.</p>
+            <p className="text-brand-muted mb-6">Prueba con otros filtros o busca algo diferente.</p>
             <button onClick={resetFiltros} className="btn-primary">Ver todos los productos</button>
           </div>
         )
@@ -415,16 +414,16 @@ export default function Catalogo() {
       {/* ══════════════════════════════════════════════════════
           VISTA POR MARCAS (acordeón)
       ══════════════════════════════════════════════════════ */}
-      {vistaMarcas && (
-        gruposMarca.length > 0 ? (
+      {vistaCategorias && (
+        gruposCategoria.length > 0 ? (
           <div className="space-y-0">
-            {gruposMarca.map(([marca, prods]) => (
-              <BrandAccordion
-                key={marca}
-                marca={marca}
+            {gruposCategoria.map(([categoria, prods]) => (
+              <CategoryAccordion
+                key={categoria}
+                categoria={categoria}
                 prods={prods}
-                isOpen={!!marcasAbiertas[marca]}
-                onToggle={() => toggleMarca(marca)}
+                isOpen={!!categoriasAbiertas[categoria]}
+                onToggle={() => toggleCategoria(categoria)}
               />
             ))}
           </div>
@@ -436,7 +435,7 @@ export default function Catalogo() {
               </svg>
             </div>
             <h3 className="text-white text-xl font-semibold mb-2">No hay marcas con esos filtros</h3>
-            <p className="text-brand-muted mb-6">Probá con otros filtros o buscá algo diferente.</p>
+            <p className="text-brand-muted mb-6">Prueba con otros filtros o busca algo diferente.</p>
             <button onClick={resetFiltros} className="btn-primary">Ver todas las marcas</button>
           </div>
         )
