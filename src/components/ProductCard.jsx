@@ -2,6 +2,7 @@ import { Link } from "react-router-dom"
 import { useCart } from "../context/CartContext"
 import { useToast } from "../context/ToastContext"
 import { CONFIG } from "../config"
+import { formatoCOP } from "../utils/moneda"
 
 const badgeColors = {
   "Más vendido": "bg-brand-orange text-white",
@@ -57,6 +58,8 @@ export default function ProductCard({ product }) {
         <img
           src={product.imagen}
           alt={product.nombre}
+          width={400}
+          height={400}
           loading="lazy"
           referrerPolicy="no-referrer"
           className="w-full aspect-square object-cover group-hover:scale-110 transition-transform duration-500"
@@ -99,7 +102,7 @@ export default function ProductCard({ product }) {
 
         <div className="flex items-center justify-between mt-3 gap-2">
           <span className="text-brand-orange font-bold text-lg">
-            {CONFIG.store.currencySymbol}{product.precio.toLocaleString("es-AR")}
+            {formatoCOP(product.precio)}
           </span>
 
           <button

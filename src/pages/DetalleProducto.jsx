@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 import productos from "../data/productos.json"
 import { CONFIG } from "../config"
 import useSEO from "../hooks/useSEO"
+import { formatoCOP } from "../utils/moneda"
 
 // Colores de badges
 const badgeColors = {
@@ -120,7 +121,7 @@ export default function DetalleProducto() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16">
 
         {/* ── Imagen ─────────────────────────────────────────────
-            REEMPLAZAR: cambiá producto.imagen por tu foto real.
+            REEMPLAZAR: cambia producto.imagen por tu foto real.
             Ejemplo: src="/imagenes/whey-protein-gold.jpg"
         */}
         <div 
@@ -137,6 +138,8 @@ export default function DetalleProducto() {
           <img
             src={producto.imagen}
             alt={producto.nombre}
+            width={600}
+            height={600}
             referrerPolicy="no-referrer"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
@@ -174,7 +177,7 @@ export default function DetalleProducto() {
           {/* Precio */}
           <div className="flex items-baseline gap-3 mb-6">
             <span className="text-brand-orange font-bold text-4xl">
-              {CONFIG.store.currencySymbol}{producto.precio.toLocaleString("es-AR")}
+              {formatoCOP(producto.precio)}
             </span>
             <span className="text-brand-muted text-sm">{CONFIG.store.currency}</span>
           </div>
@@ -291,7 +294,7 @@ export default function DetalleProducto() {
                   <p className="text-xs text-brand-muted uppercase">{p.categoria}</p>
                   <h4 className="text-white text-sm font-semibold mt-1 line-clamp-2">{p.nombre}</h4>
                   <p className="text-brand-orange font-bold mt-1">
-                    {CONFIG.store.currencySymbol}{p.precio.toLocaleString("es-AR")}
+                    {formatoCOP(p.precio)}
                   </p>
                 </div>
               </Link>
@@ -314,7 +317,7 @@ export default function DetalleProducto() {
                 </div>
                 <div className="p-3 pt-0">
                   <h4 className="text-white text-xs font-semibold line-clamp-1">{p.nombre}</h4>
-                  <p className="text-brand-orange font-bold text-sm mt-1">{CONFIG.store.currencySymbol}{p.precio.toLocaleString("es-AR")}</p>
+                  <p className="text-brand-orange font-bold text-sm mt-1">{formatoCOP(p.precio)}</p>
                 </div>
               </Link>
             ))}

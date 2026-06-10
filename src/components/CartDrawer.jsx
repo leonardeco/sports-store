@@ -42,7 +42,7 @@ export default function CartDrawer() {
           ) : (
             items.map(item => (
               <div key={item.cartId || item.id} className="flex gap-4 items-center bg-brand-dark-3 p-3 rounded-xl border border-white/5">
-                <img src={item.imagen} alt={item.nombre} className="w-16 h-16 rounded-md object-cover" />
+                <img src={item.imagen} alt={item.nombre} width={64} height={64} className="w-16 h-16 rounded-md object-cover" />
                 <div className="flex-1 min-w-0">
                   <h4 className="text-white text-sm font-semibold line-clamp-1">{item.nombre}</h4>
                   <p className="text-brand-orange font-bold text-sm">{formatoCOP(item.precio)}</p>
