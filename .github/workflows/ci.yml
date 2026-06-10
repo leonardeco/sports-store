@@ -22,7 +22,7 @@ jobs:
           cache: npm
 
       - name: Instalar dependencias
-        run: npm ci
+        run: npm install --prefer-offline
 
       - name: Lint
         run: npm run lint
