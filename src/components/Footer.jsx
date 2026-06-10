@@ -22,9 +22,9 @@ export default function Footer() {
 
           {/* ── Col 2: Navegación ─────────────────────────────── */}
           <div>
-            <h4 className="text-white font-semibold mb-4 uppercase tracking-wide text-sm">
+            <p className="text-white font-semibold mb-4 uppercase tracking-wide text-sm">
               Navegación
-            </h4>
+            </p>
             <ul className="flex flex-col gap-2">
               {[
                 { to: "/",         label: "Inicio"   },
@@ -58,9 +58,9 @@ export default function Footer() {
 
           {/* ── Col 3: Contacto ───────────────────────────────── */}
           <div>
-            <h4 className="text-white font-semibold mb-4 uppercase tracking-wide text-sm">
+            <p className="text-white font-semibold mb-4 uppercase tracking-wide text-sm">
               Contacto
-            </h4>
+            </p>
             <div className="flex flex-col gap-3">
               {/* Botón WhatsApp */}
               <a

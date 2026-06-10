@@ -1,6 +1,6 @@
 export default function PromoBanner() {
   return (
-    <div className="bg-brand-orange text-white text-xs sm:text-sm font-bold tracking-widest uppercase overflow-hidden whitespace-nowrap py-2 border-b border-white/10 z-50 relative">
+    <div className="bg-brand-orange text-brand-dark text-xs sm:text-sm font-bold tracking-widest uppercase overflow-hidden whitespace-nowrap py-2 border-b border-black/10 z-50 relative">
       <div className="animate-[marquee_20s_linear_infinite] inline-flex items-center gap-12 sm:gap-24">
         {[...Array(6)].map((_, i) => (
           <span key={i} className="flex items-center gap-4">

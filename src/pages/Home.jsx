@@ -271,7 +271,7 @@ export default function Home() {
             <div className="flex items-center gap-3 mt-6">
                <div className="w-10 h-10 rounded-full bg-brand-orange text-white font-bold flex items-center justify-center">M.R.</div>
                <div>
-                 <h5 className="text-white text-sm font-bold">Marcos Riquelme</h5>
+                 <p className="text-white text-sm font-bold">Marcos Riquelme</p>
                  <p className="text-brand-muted text-xs flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500"></span> Compra Verificada</p>
                </div>
             </div>
@@ -285,7 +285,7 @@ export default function Home() {
             <div className="flex items-center gap-3 mt-6">
                <div className="w-10 h-10 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center">V.T.</div>
                <div>
-                 <h5 className="text-white text-sm font-bold">Valeria Torres</h5>
+                 <p className="text-white text-sm font-bold">Valeria Torres</p>
                  <p className="text-brand-muted text-xs flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500"></span> Compra Verificada</p>
                </div>
             </div>
@@ -299,7 +299,7 @@ export default function Home() {
             <div className="flex items-center gap-3 mt-6">
                <div className="w-10 h-10 rounded-full bg-red-600 text-white font-bold flex items-center justify-center">S.C.</div>
                <div>
-                 <h5 className="text-white text-sm font-bold">Seba Colina</h5>
+                 <p className="text-white text-sm font-bold">Seba Colina</p>
                  <p className="text-brand-muted text-xs flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500"></span> Compra Verificada</p>
                </div>
             </div>
@@ -313,7 +313,7 @@ export default function Home() {
             <div className="flex items-center gap-3 mt-6">
                <div className="w-10 h-10 rounded-full bg-purple-600 text-white font-bold flex items-center justify-center">J.H.</div>
                <div>
-                 <h5 className="text-white text-sm font-bold">Julieta H.</h5>
+                 <p className="text-white text-sm font-bold">Julieta H.</p>
                  <p className="text-brand-muted text-xs flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500"></span> Cliente Frecuente</p>
                </div>
             </div>
