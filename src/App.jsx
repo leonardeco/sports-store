@@ -6,7 +6,6 @@ import Footer from "./components/Footer"
 import PromoBanner from "./components/PromoBanner"
 import CartDrawer from "./components/CartDrawer"
 import { WhatsAppFloat, ScrollToTop } from "./components/FloatingButtons"
-import SalesPop from "./components/SalesPop"
 import ScrollToTopOnNav from "./components/ScrollToTopOnNav"
 import Home from "./pages/Home"
 import Catalogo from "./pages/Catalogo"
@@ -34,7 +33,8 @@ export default function App() {
               </Routes>
             </main>
             <Footer />
-            <SalesPop />
+            
+            {/* Elementos Flotantes */}
             <WhatsAppFloat />
             <ScrollToTop />
             <CartDrawer />
@@ -44,3 +44,4 @@ export default function App() {
     </CartProvider>
   )
 }
+

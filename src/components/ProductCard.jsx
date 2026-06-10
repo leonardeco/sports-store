@@ -11,28 +11,25 @@ const badgeColors = {
   "Destacado":   "bg-purple-500 text-white",
 }
 
-function getRating(id) {
-  const rating = 4.5 + (id % 6) * 0.1;
-  const reviews = 80 + (id * 17) % 300;
-  return { rating: rating.toFixed(1), reviews };
-}
+
 
 export default function ProductCard({ product }) {
-  const { addItem, isInCart, openCart } = useCart()
+  const { addItem, countInCart, openCart } = useCart()
   const { addToast } = useToast()
-  const enCarrito = isInCart(product.id)
+  
+  const inCartCount = countInCart ? countInCart(product.id) : 0
   const brandConfig = CONFIG.brands[product.marca] || { accent: "#FF6B00" }
-  const { rating, reviews } = getRating(product.id)
+  
+  const varianteDefault = product.categoria === "Preentrenos" ? "Punch" : (["Proteínas", "Creatinas", "Otros Suplementos"].includes(product.categoria) ? "Vainilla" : "Única")
 
   const handleAgregar = (e) => {
     e.preventDefault()
     e.stopPropagation()
     if (product.stock === 0) return
     
-    if (!enCarrito) {
-      addItem(product)
-      addToast(`✅ ${product.nombre} agregado al carrito`)
-    }
+    // We can just add the default variant since people can add multiple
+    addItem({ ...product, cartId: product.id + "-" + varianteDefault, variante: varianteDefault })
+    addToast(`✅ ${product.nombre} agregado al carrito`)
     openCart()
   }
 
@@ -86,13 +83,13 @@ export default function ProductCard({ product }) {
           </span>
         </div>
 
-        {/* Estrellas dinámicas */}
-        <div className="flex items-center gap-1 mt-1 mb-1">
-          <div className="flex text-yellow-500 text-[10px] sm:text-xs tracking-tighter">
-             ★★★★★
-          </div>
-          <span className="text-brand-muted text-[10px] ml-1">{rating} ({reviews})</span>
-        </div>
+        {product.stock > 0 && product.stock < 6 ? (
+          <span className="inline-block bg-yellow-500/10 text-yellow-500 text-[10px] font-bold px-2 py-0.5 rounded w-fit mt-1 mb-1 border border-yellow-500/20">
+            Últimas unidades
+          </span>
+        ) : (
+          <div className="h-[22px]" />
+        )}
 
         <Link to={`/producto/${product.id}`} className="mt-1 flex-1">
           <h3 className="font-semibold text-white hover:text-brand-orange transition-colors duration-200 line-clamp-2 leading-snug">
@@ -114,7 +111,7 @@ export default function ProductCard({ product }) {
                 : "bg-brand-orange hover:bg-brand-orange-light text-white hover:scale-105 active:scale-95 cursor-pointer shadow-md shadow-brand-orange/20 hover:shadow-brand-orange/40"}
               `}
           >
-            {product.stock === 0 ? "Agotado" : enCarrito ? "Agregado ✓" : "Agregar"}
+            {product.stock === 0 ? "Agotado" : inCartCount > 0 ? "Agregado ✓" : "Agregar"}
           </button>
         </div>
 
