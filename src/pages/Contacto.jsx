@@ -4,6 +4,8 @@ import { CONFIG } from "../config"
 export default function Contacto() {
   const [form, setForm]     = useState({ nombre: "", email: "", mensaje: "" })
   const [enviado, setEnviado] = useState(false)
+  const [enviando, setEnviando] = useState(false)
+  const [errorEnvio, setErrorEnvio] = useState(false)
   const [errores, setErrores] = useState({})
 
   // ── Validación simple ─────────────────────────────────────────────────────
@@ -33,11 +35,31 @@ export default function Contacto() {
       setErrores(erroresValidados)
       return
     }
-    // Simular envío exitoso (sin backend por ahora)
-    setEnviado(true)
-    setForm({ nombre: "", email: "", mensaje: "" })
-    setErrores({})
-    setTimeout(() => setEnviado(false), 6000)
+    setEnviando(true)
+    setErrorEnvio(false)
+    setEnviado(false)
+    
+    fetch("/", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ "form-name": "contacto", ...form }).toString()
+    })
+      .then(res => {
+        if (res.ok) {
+          setEnviado(true)
+          setForm({ nombre: "", email: "", mensaje: "" })
+          setErrores({})
+          setTimeout(() => setEnviado(false), 6000)
+        } else {
+          setErrorEnvio(true)
+        }
+      })
+      .catch(() => {
+        setErrorEnvio(true)
+      })
+      .finally(() => {
+        setEnviando(false)
+      })
   }
 
   return (
@@ -65,6 +87,18 @@ export default function Contacto() {
               </svg>
               <p className="text-sm font-medium">
                 ¡Tu mensaje fue enviado! Te contactaremos a la brevedad.
+              </p>
+            </div>
+          )}
+
+          {/* Banner de error */}
+          {errorEnvio && (
+            <div className="flex items-center gap-3 bg-red-900/40 border border-red-500/30 text-red-400 rounded-xl px-4 py-3 mb-6 animate-fade-in">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 flex-shrink-0">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+              </svg>
+              <p className="text-sm font-medium">
+                No pudimos enviar tu mensaje. <a href={`https://wa.me/${CONFIG.whatsapp.number}`} target="_blank" rel="noopener noreferrer" className="underline font-bold">Escribinos directo por WhatsApp</a>
               </p>
             </div>
           )}
@@ -127,9 +161,10 @@ export default function Contacto() {
 
             <button
               type="submit"
-              className="btn-primary w-full text-lg py-4"
+              disabled={enviando}
+              className={`btn-primary w-full text-lg py-4 ${enviando ? "opacity-50 cursor-not-allowed" : ""}`}
             >
-              Enviar mensaje
+              {enviando ? "Enviando..." : "Enviar mensaje"}
             </button>
           </form>
         </div>

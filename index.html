@@ -27,6 +27,7 @@
     <meta name="twitter:title" content="LEOFIT | Suplementos Deportivos en Colombia" />
     <meta name="twitter:description" content="Suplementos deportivos de las mejores marcas. +120 productos. Pide por WhatsApp y recibe en tu puerta." />
     <meta name="twitter:image" content="https://leofit.netlify.app/img/banners/hero-banner.png" />
+
     <!-- Google Fonts: Bebas Neue para títulos + Inter para texto -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -34,6 +35,11 @@
   </head>
   <body>
     <div id="root"></div>
+    <form name="contacto" netlify netlify-honeypot="bot-field" hidden>
+      <input type="text" name="nombre" />
+      <input type="email" name="email" />
+      <textarea name="mensaje"></textarea>
+    </form>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
