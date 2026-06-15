@@ -118,7 +118,7 @@ export default function Catalogo() {
 
   useSEO({
     title: busqueda ? `Resultados de "${busqueda}"` : "Catálogo Completo",
-    description: "Explora todos los productos de suplementación y ropa en nuestra tienda LEOFIT."
+    description: "Explora todo el catálogo de suplementación deportiva de LEOFIT: proteínas, creatinas, pre-entrenos y más."
   })
 
   // Leer categoría o búsqueda desde URL al montar o cambiar

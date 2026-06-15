@@ -1,59 +1,9 @@
 import { createContext, useContext, useReducer, useEffect, useState } from "react"
 import productos from "../data/productos.json"
+import { ACTIONS, cartReducer } from "../utils/cartReducer"
 
 // ─── Contexto ────────────────────────────────────────────────────────────────
 const CartContext = createContext(null)
-
-// ─── Tipos de acción ─────────────────────────────────────────────────────────
-const ACTIONS = {
-  ADD_ITEM:    "ACTIONS/ADD_ITEM",
-  REMOVE_ITEM: "ACTIONS/REMOVE_ITEM",
-  UPDATE_QTY:  "ACTIONS/UPDATE_QTY",
-  CLEAR_CART:  "ACTIONS/CLEAR_CART",
-}
-
-// ─── Reducer ─────────────────────────────────────────────────────────────────
-function cartReducer(state, action) {
-  switch (action.type) {
-    case ACTIONS.ADD_ITEM: {
-      const cartId = action.payload.cartId || action.payload.id.toString()
-      const payloadToAdd = { ...action.payload, cartId }
-      const stock = action.payload.stock ?? 99
-
-      const existing = state.find(i => (i.cartId || i.id.toString()) === cartId)
-      if (existing) {
-        return state.map(i =>
-          (i.cartId || i.id.toString()) === cartId
-            ? { ...i, cantidad: Math.min(i.cantidad + 1, stock) }
-            : i
-        )
-      }
-      return [...state, { ...payloadToAdd, cantidad: 1 }]
-    }
-
-    case ACTIONS.REMOVE_ITEM:
-      return state.filter(i => (i.cartId || i.id.toString()) !== action.payload.toString())
-
-    case ACTIONS.UPDATE_QTY: {
-      if (action.payload.cantidad < 1) {
-        return state.filter(i => (i.cartId || i.id.toString()) !== action.payload.cartId.toString())
-      }
-      const existing = state.find(i => (i.cartId || i.id.toString()) === action.payload.cartId.toString())
-      const stock = existing ? (existing.stock ?? 99) : 99
-      return state.map(i =>
-        (i.cartId || i.id.toString()) === action.payload.cartId.toString()
-          ? { ...i, cantidad: Math.min(action.payload.cantidad, stock) }
-          : i
-      )
-    }
-
-    case ACTIONS.CLEAR_CART:
-      return []
-
-    default:
-      return state
-  }
-}
 
 // ─── Clave de localStorage ────────────────────────────────────────────────────
 const STORAGE_KEY = "leofit_cart"

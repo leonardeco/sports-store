@@ -32,7 +32,7 @@ const categorias = [
 export default function Home() {
   useSEO({ 
     title: "Inicio", 
-    description: "Tienda online deportiva LEOFIT con los mejores suplementos y prendas técnicas." 
+    description: "Tienda online LEOFIT con los mejores suplementos deportivos: proteínas, creatinas y pre-entrenos." 
   })
 
   return (
@@ -234,8 +234,8 @@ export default function Home() {
                <div className="w-14 h-14 rounded-full bg-brand-orange/10 flex items-center justify-center text-brand-orange">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
                </div>
-               <h4 className="text-white font-bold text-sm uppercase tracking-wide">Pago Seguro</h4>
-               <p className="text-brand-muted text-xs">Protección al comprador real</p>
+               <h4 className="text-white font-bold text-sm uppercase tracking-wide">Compra Asesorada</h4>
+               <p className="text-brand-muted text-xs">Te guiamos en todo el pedido</p>
             </div>
 
             <div className="flex flex-col items-center gap-3">

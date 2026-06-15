@@ -164,7 +164,7 @@ export default function Carrito() {
         {/* ── Lista de items (2/3) ───────────────────────────────── */}
         <div className="lg:col-span-2 flex flex-col gap-4">
           {items.map(item => (
-            <CartItem key={item.id} item={item} />
+            <CartItem key={item.cartId || item.id} item={item} />
           ))}
 
           {/* Vaciar carrito */}
@@ -269,7 +269,7 @@ export default function Carrito() {
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
               </svg>
-              🔒 Checkout Seguro de LEOFIT vía WhatsApp
+              🔒 Coordinas pago y envío directo con un asesor por WhatsApp
             </div>
 
             {/* Seguir comprando */}
