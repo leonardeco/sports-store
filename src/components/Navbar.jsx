@@ -9,84 +9,26 @@ const navLinks = [
   { to: "/contacto", label: "Contacto" },
 ]
 
-export default function Navbar() {
-  const [menuAbierto, setMenuAbierto] = useState(false)
-  const [query, setQuery] = useState("")
-  const { totalItems, openCart } = useCart()
-  const navigate = useNavigate()
-  const location = useLocation()
+// ── Subcomponentes a NIVEL DE MÓDULO ────────────────────────────────────────
+// Definirlos fuera del render evita que React los desmonte/remonte en cada
+// pulsación de tecla (lo que provocaba la pérdida de foco del buscador).
 
-  // Cerrar el menú móvil automáticamente al cambiar de ruta
-  useEffect(() => {
-    setMenuAbierto(false)
-  }, [location.pathname])
-
-  // Bloquear el scroll del body cuando el menú móvil está abierto
-  useEffect(() => {
-    if (menuAbierto) {
-      document.body.style.overflow = "hidden"
-    } else {
-      document.body.style.overflow = ""
-    }
-    return () => {
-      // Limpieza por si el componente se desmonta
-      document.body.style.overflow = ""
-    }
-  }, [menuAbierto])
-
-  const handleSearch = (e) => {
-    e.preventDefault()
-    if (query.trim()) {
-      navigate(`/catalogo?q=${encodeURIComponent(query.trim())}`)
-      setMenuAbierto(false)
-      // Opcional: mantener el query o vaciarlo. Para mejor UX dejaremos que si busca algo se limpie, o se mantenga.
-      // Aquí vaciamos para dejar el input libre, útil tras cada búsqueda.
-      setQuery("")
-    }
-  }
-
-  const forceDownloadPdf = async (e) => {
-    e.preventDefault()
-    try {
-      const response = await fetch('/catalogo.pdf')
-      const blob = await response.blob()
-      const url = window.URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.style.display = 'none'
-      a.href = url
-      a.download = 'Catalogo_LEOFIT.pdf'
-      document.body.appendChild(a)
-      a.click()
-      window.URL.revokeObjectURL(url)
-      document.body.removeChild(a)
-    } catch (error) {
-      console.error("Error descargando el PDF:", error)
-      window.open('/catalogo.pdf', '_blank')
-    }
-    setMenuAbierto(false)
-  }
-
-  const linkClass = ({ isActive }) =>
-    isActive
-      ? "text-brand-orange font-semibold border-b-2 border-brand-orange pb-0.5"
-      : "text-gray-300 hover:text-brand-orange transition-colors duration-200"
-
-  // Componente de UI para Buscar
-  const SearchBar = ({ isMobile }) => (
-    <form onSubmit={handleSearch} className="relative">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" 
+function SearchBar({ isMobile, query, setQuery, onSubmit }) {
+  return (
+    <form onSubmit={onSubmit} className="relative">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"
            className={`absolute top-1/2 -translate-y-1/2 text-brand-muted ${isMobile ? "left-3 w-5 h-5" : "left-3 w-4 h-4 ml-4"}`}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
       </svg>
-      <input 
-        type="text" 
+      <input
+        type="text"
         aria-label="Buscar productos"
-        placeholder={isMobile ? "Buscar productos..." : "Buscar..."} 
+        placeholder={isMobile ? "Buscar productos..." : "Buscar..."}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         className={`bg-brand-dark-3 border border-white/10 rounded-full text-white focus:outline-none focus:border-brand-orange/60 transition-all duration-300 ${
-          isMobile 
-            ? "pl-10 pr-10 py-3 text-base w-full" 
+          isMobile
+            ? "pl-10 pr-10 py-3 text-base w-full"
             : "pl-9 pr-8 py-1.5 text-sm w-48 focus:w-64 ml-4"
         }`}
       />
@@ -106,11 +48,12 @@ export default function Navbar() {
       )}
     </form>
   )
+}
 
-  // Componente de UI para PDF
-  const DownloadPdfBtn = ({ isMobile }) => (
+function DownloadPdfBtn({ isMobile, onClick }) {
+  return (
     <button
-      onClick={forceDownloadPdf}
+      onClick={onClick}
       className={
         isMobile
           ? "mt-2 flex items-center justify-center gap-2 bg-brand-orange text-white px-4 py-3 rounded-xl font-bold shadow-lg shadow-brand-orange/20 cursor-pointer w-full hover:bg-brand-orange/90 transition-colors"
@@ -123,6 +66,60 @@ export default function Navbar() {
       {isMobile ? "Descargar Catálogo (PDF)" : "Descargar PDF"}
     </button>
   )
+}
+
+export default function Navbar() {
+  const [menuAbierto, setMenuAbierto] = useState(false)
+  const [query, setQuery] = useState("")
+  const { totalItems, openCart } = useCart()
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  // Cerrar el menú móvil automáticamente al cambiar de ruta
+  useEffect(() => {
+    setMenuAbierto(false)
+  }, [location.pathname])
+
+  // Bloquear el scroll del body cuando el menú móvil está abierto
+  useEffect(() => {
+    document.body.style.overflow = menuAbierto ? "hidden" : ""
+    return () => { document.body.style.overflow = "" }
+  }, [menuAbierto])
+
+  const handleSearch = (e) => {
+    e.preventDefault()
+    if (query.trim()) {
+      navigate(`/catalogo?q=${encodeURIComponent(query.trim())}`)
+      setMenuAbierto(false)
+      setQuery("")
+    }
+  }
+
+  const forceDownloadPdf = async (e) => {
+    e.preventDefault()
+    try {
+      const response = await fetch("/catalogo.pdf")
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.style.display = "none"
+      a.href = url
+      a.download = "Catalogo_LEOFIT.pdf"
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (error) {
+      console.error("Error descargando el PDF:", error)
+      window.open("/catalogo.pdf", "_blank")
+    }
+    setMenuAbierto(false)
+  }
+
+  const linkClass = ({ isActive }) =>
+    isActive
+      ? "text-brand-orange font-semibold border-b-2 border-brand-orange pb-0.5"
+      : "text-gray-300 hover:text-brand-orange transition-colors duration-200"
 
   return (
     <nav className="sticky top-0 z-50 bg-brand-dark/90 backdrop-blur-md border-b border-white/5">
@@ -140,14 +137,13 @@ export default function Navbar() {
               {link.label}
             </NavLink>
           ))}
-          
-          <DownloadPdfBtn isMobile={false} />
-          <SearchBar isMobile={false} />
+
+          <DownloadPdfBtn isMobile={false} onClick={forceDownloadPdf} />
+          <SearchBar isMobile={false} query={query} setQuery={setQuery} onSubmit={handleSearch} />
         </div>
 
         {/* ── Iconos derecha ──────────────────────────────────── */}
         <div className="flex items-center gap-4">
-          {/* Carrito con badge */}
           <button
             onClick={openCart}
             className="relative text-gray-300 hover:text-brand-orange transition-colors duration-200 cursor-pointer"
@@ -184,7 +180,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* ── Overlay oscuro detrás del menú mobile ───────────── */}
+      {/* ── Overlay del menú mobile ─────────────────────────── */}
       {menuAbierto && (
         <div
           className="md:hidden fixed inset-0 top-20 bg-black/60 z-40"
@@ -197,11 +193,11 @@ export default function Navbar() {
       {menuAbierto && (
         <div id="mobile-menu" className="md:hidden relative z-50 bg-brand-dark-2 border-t border-white/5 animate-slide-up">
           <div className="px-6 py-5 flex flex-col gap-5">
-            
-            <SearchBar isMobile={true} />
-            
+
+            <SearchBar isMobile={true} query={query} setQuery={setQuery} onSubmit={handleSearch} />
+
             <hr className="border-white/5" />
-            
+
             {navLinks.map(link => (
               <NavLink
                 key={link.to}
@@ -212,19 +208,16 @@ export default function Navbar() {
                   }`
                 }
                 end={link.to === "/"}
-                // Ya no hace falta el onClick={() => setMenuAbierto(false)} aquí
-                // porque el useEffect de location.pathname lo maneja todo.
               >
                 {link.label}
               </NavLink>
             ))}
 
-            <DownloadPdfBtn isMobile={true} />
-            
+            <DownloadPdfBtn isMobile={true} onClick={forceDownloadPdf} />
+
           </div>
         </div>
       )}
     </nav>
   )
 }
-
