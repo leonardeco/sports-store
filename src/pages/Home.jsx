@@ -32,7 +32,7 @@ const categorias = [
 export default function Home() {
   useSEO({ 
     title: "Inicio", 
-    description: "Tienda online deportiva LEOFIT con los mejores suplementos y prendas técnicas." 
+    description: "Tienda online LEOFIT con los mejores suplementos deportivos: proteínas, creatinas y pre-entrenos." 
   })
 
   return (
