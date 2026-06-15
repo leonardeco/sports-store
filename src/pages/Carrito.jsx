@@ -164,7 +164,7 @@ export default function Carrito() {
         {/* ── Lista de items (2/3) ───────────────────────────────── */}
         <div className="lg:col-span-2 flex flex-col gap-4">
           {items.map(item => (
-            <CartItem key={item.id} item={item} />
+            <CartItem key={item.cartId || item.id} item={item} />
           ))}
 
           {/* Vaciar carrito */}
